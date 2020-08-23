@@ -35,6 +35,15 @@ val uninstallElasticsearchChart by tasks.creating(HelmUninstall::class) {
     releaseName.value("elasticsearch")
 }
 
-task("clean") {
+val installKubelessChart by tasks.creating(HelmInstall::class) {
+    chart.value("incubator/kubeless")
+    releaseName.value("kubeless")
+}
+
+val uninstallKubelessChart by tasks.creating(HelmUninstall::class) {
+    releaseName.value("kubeless")
+}
+
+val clean by tasks.creating(Delete::class) {
     dependsOn(uninstallElasticsearchChart)
 }
