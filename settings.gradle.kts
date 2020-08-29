@@ -8,3 +8,6 @@
  */
 
 rootProject.name = "cloud-resource-dashboard"
+
+include("back:api")
+include("web")
