@@ -1,0 +1,17 @@
+service: cloud-resource-dashboard-api
+
+provider:
+  name: kubeless
+  runtime: go1.14
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  getResources:
+    handler:
