@@ -1,0 +1,19 @@
+{
+  "name": "kubeless-nodejs",
+  "version": "1.0.0",
+  "description": "Example function for serverless kubeless",
+  "dependencies": {
+    "serverless-kubeless": "^0.10.2",
+    "lodash": "^4.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serverless",
+    "kubeless"
+  ],
+  "author": "Max Levitskiy",
+  "license": "MIT License"
+}

@@ -1,0 +1,12 @@
+service: cloud-resources-api
+
+provider:
+  name: kubeless
+  runtime: nodejs8
+
+plugins:
+  - serverless-kubeless
+
+functions:
+  list-resources:
+    handler: handlers/resource/list.handle
