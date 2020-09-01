@@ -68,6 +68,7 @@ val uninstallLogstashChart by tasks.creating(HelmUninstall::class) {
 val installKubelessChart by tasks.creating(HelmInstall::class) {
     chart.value("incubator/kubeless")
     releaseName.value("kubeless")
+//    namespace.value("kubeless")
 }
 
 val uninstallKubelessChart by tasks.creating(HelmUninstall::class) {
