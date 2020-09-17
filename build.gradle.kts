@@ -27,13 +27,14 @@ val installElasticsearchChart by tasks.creating(HelmInstall::class) {
     releaseName.value("elasticsearch")
     values.put("masterService", "elasticsearch")
     values.put("persistence.enabled", "false")
-    values.put("replicas", "3")
+    values.put("replicas", "1")
     values.put("antiAffinity", "soft")
     values.put("clusterHealthCheckParams", "wait_for_status=yellow&timeout=1s")
     values.put("service.type", "NodePort")
     values.put("service.nodePort", "30920")
     values.put("resources.requests.cpu", "100m")
-    values.put("resources.requests.memory", "100Mi")
+    values.put("resources.requests.memory", "500Mi")
+    values.put("esJavaOpts", "-Xmx500m -Xms500m")
 }
 
 val uninstallElasticsearchChart by tasks.creating(HelmUninstall::class) {
