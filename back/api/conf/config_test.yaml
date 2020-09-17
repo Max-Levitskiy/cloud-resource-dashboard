@@ -1,0 +1,4 @@
+elastic:
+  index:
+    resource:
+      name: "resources_test"

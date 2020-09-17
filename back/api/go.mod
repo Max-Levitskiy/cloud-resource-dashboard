@@ -7,8 +7,9 @@ require (
 	github.com/aws/aws-sdk-go v1.16.26
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20200901131320-e21ad8e37e8d
-	github.com/google/uuid v1.1.2 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/stretchr/testify v1.3.0
 	golang.org/x/net v0.0.0-20190125091013-d26f9f9a57f3 // indirect
 	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect
+	gopkg.in/yaml.v2 v2.3.0
 )
