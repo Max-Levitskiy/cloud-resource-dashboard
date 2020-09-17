@@ -1,0 +1,6 @@
+elastic:
+  server: "localhost"
+  port: 30920
+  index:
+    resource:
+      name: "resources"
