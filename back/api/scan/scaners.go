@@ -11,7 +11,7 @@ var providers = map[string]func(){
 }
 
 func StartFullScan() {
-	elasticsearch.ClearResourceIndex()
+	elasticsearch.Client.ClearResourceIndex()
 	for _, f := range providers {
 		go f()
 	}

@@ -25,11 +25,8 @@ func scanS3(accountId *string, region string) {
 		log.Printf("Start scan S3 for %s region", region)
 		listS3, err := ListS3(region)
 		if err == nil {
-			resources := s3BucketsToResources(listS3.Buckets, accountId)
-			//elasticsearch.BulkSave(resources)
-			for _, resource := range resources {
-				go elasticsearch.SaveResource(resource)
-			}
+			resources := s3BucketsToResources(listS3.Buckets, accountId, &region)
+			elasticsearch.Client.BulkSave(resources)
 		}
 		log.Printf("Scan S3 for %s region finished", region)
 	}(region)
@@ -60,13 +57,14 @@ func ListS3(region string) (*s3.ListBucketsOutput, error) {
 	}
 }
 
-func s3BucketsToResources(buckets []*s3.Bucket, accountId *string) []model.Resource {
+func s3BucketsToResources(buckets []*s3.Bucket, accountId *string, region *string) []model.Resource {
 	var resources = make([]model.Resource, len(buckets))
 	for i, bucket := range buckets {
 		resources[i] = model.Resource{
 			CloudProvider: clouds.AWS,
 			ResourceType:  "s3",
 			AccountId:     accountId,
+			Region:        region,
 			Name:          bucket.Name,
 			CreationDate:  bucket.CreationDate,
 		}
@@ -80,7 +78,7 @@ func getAwsRegions() []string {
 
 	var regions []string
 	for _, p := range partitions {
-		for id, _ := range p.Regions() {
+		for id := range p.Regions() {
 			regions = append(regions, id)
 		}
 	}
