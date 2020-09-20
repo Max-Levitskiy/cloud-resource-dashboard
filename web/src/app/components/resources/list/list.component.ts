@@ -1,11 +1,9 @@
-import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, ViewChild} from '@angular/core';
 import {ResourceService} from '../../../services/resource.service';
 import {Resource} from '../../../model/resource';
-import {SearchResponse} from 'elasticsearch';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
 import {merge} from 'rxjs';
-import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import {map, startWith, switchMap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
 
 @Component({
