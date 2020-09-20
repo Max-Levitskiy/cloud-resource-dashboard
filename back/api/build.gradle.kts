@@ -1,4 +1,3 @@
-
 class BuildGolan : Plugin<Project> {
 //
 //    private val dir: File =
@@ -8,15 +7,17 @@ class BuildGolan : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.tasks.register("buildHandlers") {
-
-            val dir = project.file("handlers/")
-            dir.listFiles()?.forEach { file ->
-                val name = file.name
-                project.logger.info("Compiling file ${name}...")
-                project.exec {
-                    commandLine("bash", "-c", "GOOS=linux go build -o bin/${name}.go handlers/${name}/main.go")
-                }
+            project.exec {
+                commandLine("bash", "-c", "GOOS=linux go build -o bin/api api.go")
             }
+//            val dir = project.file("handlers/")
+//            dir.listFiles()?.forEach { file ->
+//                val name = file.name
+//                project.logger.info("Compiling file ${name}...")
+//                project.exec {
+//                    commandLine("bash", "-c", "GOOS=linux go build -o bin/${name}.go handlers/${name}/main.go")
+//                }
+//            }
         }
     }
 
