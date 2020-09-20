@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	http.HandleFunc("/ping", handlers.StatusHandler)
 	http.HandleFunc("/resource", handlers.ResourceHandler)
 	http.HandleFunc("/resource/scan/full", handlers.FullScanHandler)
 
