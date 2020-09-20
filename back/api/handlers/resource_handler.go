@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,16 @@ func ResourceHandler(w http.ResponseWriter, req *http.Request) {
 		//	errors.HandleError(err, w, req)
 		//}
 		break
+	default:
+		w.WriteHeader(404)
+	}
+}
+func StatusHandler(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet:
+		if _, err := w.Write([]byte(`{"status": "ok"}`)); err != nil {
+			log.Panic(err)
+		}
 	default:
 		w.WriteHeader(404)
 	}
