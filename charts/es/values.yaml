@@ -1,0 +1,22 @@
+masterService: elasticsearch
+persistence.enabled: false
+replicas: 1
+antiAffinity: "soft"
+clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
+service:
+  type: "NodePort"
+  nodePort: 30920
+resources:
+  requests:
+    cpu: "100m"
+    memory: "500Mi"
+esJavaOpts: "-Xmx500m -Xms500m"
+
+esConfig:
+  elasticsearch.yml: |
+    http:
+      cors:
+        enabled: true
+        allow-origin: "*"
+        allow-methods: "OPTIONS, HEAD, GET, POST, PUT, DELETE"
+        allow-headers: "X-Requested-With,X-Auth-Token,Content-Type, Content-Length"
