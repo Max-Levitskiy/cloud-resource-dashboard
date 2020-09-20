@@ -37,13 +37,14 @@ export class ListComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    merge(this.paginator.page)
+    merge(this.paginator.page, this.filterEmitter)
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
           return this.resourceService.fetchResources(
             this.paginator.pageIndex * this.paginator.pageSize,
+            this.query
           );
         }),
         map(data => {
@@ -64,5 +65,6 @@ export class ListComponent implements AfterViewInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.query = filterValue.trim().toLowerCase();
+    this.filterEmitter.emit();
   }
 }
