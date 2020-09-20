@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ElasticsearchService} from '../../../services/elasticsearch.service';
+import {ApiService} from '../../../services/api.service';
 
 @Component({
   selector: 'app-status',
@@ -7,25 +8,47 @@ import {ElasticsearchService} from '../../../services/elasticsearch.service';
   styleUrls: ['./status.component.scss']
 })
 export class StatusComponent implements OnInit {
-  isConnected = false;
-  status: string;
-  loading = true;
+  isEsConnected = false;
+  esStatus: Status;
+  apiStatus: Status;
 
-  constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
-    this.isConnected = false;
+  esStatusLoading = true;
+  apiStatusLoading = true;
+
+  constructor(
+    private es: ElasticsearchService,
+    private api: ApiService,
+    private cd: ChangeDetectorRef) {
   }
 
   ngOnInit() {
+    this.requestEsStatus();
+    this.requestApiStatus();
+  }
+
+  private requestEsStatus() {
     this.es.isAvailable().then(() => {
-      this.status = 'OK';
-      this.isConnected = true;
+      this.esStatus = Status.OK;
+      this.isEsConnected = true;
     }, error => {
-      this.status = 'ERR';
-      this.isConnected = false;
+      this.esStatus = Status.ERROR;
+      this.isEsConnected = false;
       console.error('Server is down', error);
     }).then(() => {
       this.cd.detectChanges();
-    }).finally(() => this.loading = false);
+    }).finally(() => this.esStatusLoading = false);
   }
 
+  private requestApiStatus() {
+    this.api
+      .ping()
+      .then(ok => ok ? this.apiStatus = Status.OK : this.apiStatus = Status.ERROR)
+      .then((value) => console.log(value))
+      .finally(() => this.apiStatusLoading = false);
+  }
+
+}
+
+export enum Status {
+  OK = 'OK', ERROR = 'ERR'
 }
