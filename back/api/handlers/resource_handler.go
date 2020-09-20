@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"log"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/handlers/common/response"
 	"net/http"
 )
 
@@ -27,9 +27,7 @@ func ResourceHandler(w http.ResponseWriter, req *http.Request) {
 func StatusHandler(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodGet:
-		if _, err := w.Write([]byte(`{"status": "ok"}`)); err != nil {
-			log.Panic(err)
-		}
+		response.WriteBytes(w, []byte(`{"status": "ok"}`))
 	default:
 		w.WriteHeader(404)
 	}
