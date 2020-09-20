@@ -9,6 +9,7 @@ import {ElasticsearchService} from '../../../services/elasticsearch.service';
 export class StatusComponent implements OnInit {
   isConnected = false;
   status: string;
+  loading = true;
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.isConnected = false;
@@ -19,12 +20,12 @@ export class StatusComponent implements OnInit {
       this.status = 'OK';
       this.isConnected = true;
     }, error => {
-      this.status = 'ERROR';
+      this.status = 'ERR';
       this.isConnected = false;
       console.error('Server is down', error);
     }).then(() => {
       this.cd.detectChanges();
-    });
+    }).finally(() => this.loading = false);
   }
 
 }

@@ -1,1 +1,5 @@
-<h3 class="col-md-12 text-center">Elasticsearch server status: {{status}}</h3>
+<h3 class="col-md-12 text-center" *ngIf="!loading">
+  ES status:
+  <button *ngIf="isConnected" mat-button mat-mini-fab color="accent">{{status}}</button>
+  <button *ngIf="!isConnected" mat-button mat-mini-fab color="warn">{{status}}</button>
+</h3>
