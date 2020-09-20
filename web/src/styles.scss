@@ -15,3 +15,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   align-items: center;
   justify-content: center;
 }
+
+.flex-spacer {
+  flex-grow: 1;
+}
