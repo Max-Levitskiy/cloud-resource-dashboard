@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ElasticsearchService} from './elasticsearch.service';
 import {environment} from '../../environments/environment';
 import {SearchParams, SearchResponse} from 'elasticsearch';
 import {Resource} from '../model/resource';
-import {SortDirection} from '@angular/material/sort';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +17,9 @@ export class ResourceService {
         index: environment.es.index.resource.name,
         from,
       };
+      if (query) {
+        params.q = query;
+      }
       return client.search(params);
     });
   }
