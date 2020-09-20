@@ -7,7 +7,7 @@ export const environment = {
   es: {
     host: 'http://localhost',
     port: 30920,
-    logLevel: 'trace',
+    logLevel: 'info',
     index: {
       resource: {
         name: 'resources'
