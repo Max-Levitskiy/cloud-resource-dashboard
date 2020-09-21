@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ElasticsearchService} from '../../../services/elasticsearch.service';
-import {ApiService} from '../../../services/api.service';
+import {ElasticsearchService} from '../../services/elasticsearch.service';
+import {ApiService} from '../../services/api.service';
 
 @Component({
   selector: 'app-status',
