@@ -15,12 +15,14 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button';
 import {HttpClientModule} from '@angular/common/http';
+import { ControlButtonsComponent } from './components/api/control-buttons/control-buttons.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ListComponent,
-    StatusComponent
+    StatusComponent,
+    ControlButtonsComponent
   ],
   imports: [
     BrowserModule,
