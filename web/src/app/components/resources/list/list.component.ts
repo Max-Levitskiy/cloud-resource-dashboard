@@ -47,6 +47,8 @@ export class ListComponent implements AfterViewInit {
         }),
         map(data => {
           this.isLoadingResults = false;
+          // TODO: Remove ts-ignore after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/47812 will be merged
+          // @ts-ignore
           this.total = data.hits.total.value;
           return data;
         }),
