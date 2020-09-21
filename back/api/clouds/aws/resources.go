@@ -19,6 +19,7 @@ func FullScan() {
 	for _, region := range awsRegions {
 		go scanS3(accountId, region)
 		go scanEc2(accountId, region)
+		go scanEBS(accountId, region)
 	}
 }
 
@@ -33,13 +34,23 @@ func scanS3(accountId *string, region string) {
 }
 
 func scanEc2(accountId *string, region string) {
-	log.Printf("Start scan EC2 for %p account %s region", accountId, region)
+	log.Printf("Start scan EC2 for %s account %s region", *accountId, region)
 	listS3, err := ListEC2(region)
 	if err == nil {
 		resources := ec2InstancesToResources(listS3.Reservations, accountId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	log.Printf("Scan EC2 for %s region finished", region)
+}
+
+func scanEBS(accountId *string, region string) {
+	log.Printf("Start scan EBS for %s account %s region", *accountId, region)
+	ebsList, err := ListEBS(region)
+	if err == nil {
+		resources := ebsInstancesToResources(ebsList.Volumes, accountId, &region)
+		elasticsearch.Client.BulkSave(resources)
+	}
+	log.Printf("Scan EBS for %s region finished", region)
 }
 
 func getAccountId() *string {
@@ -81,6 +92,20 @@ func ListEC2(region string) (*ec2.DescribeInstancesOutput, error) {
 	}
 }
 
+func ListEBS(region string) (*ec2.DescribeVolumesOutput, error) {
+	input := &ec2.DescribeVolumesInput{}
+	session := getSession(region)
+
+	svc := ec2.New(session)
+
+	result, err := svc.DescribeVolumes(input)
+	if err == nil {
+		return result, nil
+	} else {
+		return nil, err
+	}
+}
+
 func s3BucketsToResources(buckets []*s3.Bucket, accountId *string, region *string) []model.Resource {
 	var resources = make([]model.Resource, len(buckets))
 	for i, bucket := range buckets {
@@ -109,6 +134,22 @@ func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string,
 				CreationDate:  instance.LaunchTime,
 				Tags:          awsToResourceTags(instance.Tags),
 			}
+		}
+	}
+	return resources
+}
+func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []model.Resource {
+	var resources = make([]model.Resource, len(volumes))
+	for i, volume := range volumes {
+
+		resources[i] = model.Resource{
+			CloudProvider: clouds.AWS,
+			ResourceType:  "ebs",
+			AccountId:     accountId,
+			Region:        region,
+			Name:          volume.VolumeId,
+			CreationDate:  volume.CreateTime,
+			Tags:          awsToResourceTags(volume.Tags),
 		}
 	}
 	return resources
