@@ -12,6 +12,19 @@ func WriteBytes(w http.ResponseWriter, bytes []byte) {
 	}
 }
 
+func Ok(w http.ResponseWriter) {
+	WriteBytes(w, []byte(`{"status": "ok"}`))
+}
+
+func Status(w http.ResponseWriter, status int) {
+	setDefaultHeaders(w)
+	w.WriteHeader(status)
+}
+
+func NotFound(w http.ResponseWriter) {
+	Status(w, http.StatusNotFound)
+}
+
 func setDefaultHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")

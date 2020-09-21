@@ -20,4 +20,8 @@ export class ApiService {
         return false;
       });
   }
+
+  runFullScan() {
+    this.http.post(`${environment.api.host}:${environment.api.port}/resource/scan/full`, '').subscribe();
+  }
 }

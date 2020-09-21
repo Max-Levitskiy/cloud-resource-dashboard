@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/handlers/common/response"
 	"net/http"
 )
 
 func ResourceHandler(w http.ResponseWriter, req *http.Request) {
+	fmt.Println(req.Method)
+
 	switch req.Method {
 	case http.MethodGet:
 		//if listS3, err := aws.ListS3("eu-central-1"); err == nil {
@@ -20,15 +23,10 @@ func ResourceHandler(w http.ResponseWriter, req *http.Request) {
 		//	errors.HandleError(err, w, req)
 		//}
 		break
+	case http.MethodOptions:
+		response.Ok(w)
+		break
 	default:
-		w.WriteHeader(404)
-	}
-}
-func StatusHandler(w http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodGet:
-		response.WriteBytes(w, []byte(`{"status": "ok"}`))
-	default:
-		w.WriteHeader(404)
+		response.NotFound(w)
 	}
 }
