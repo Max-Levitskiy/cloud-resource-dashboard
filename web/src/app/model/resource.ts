@@ -1,5 +1,4 @@
 export class Resource {
-    Id: string;
     CloudProvider: string;
     ResourceType: string;
     AccountId: string;

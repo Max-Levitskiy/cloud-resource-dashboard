@@ -13,14 +13,13 @@ import {EsHits} from '../../../model/es/es-hits';
 })
 export class ListComponent implements AfterViewInit {
   displayedColumns: string[] = [
-    // 'Id',
     'CloudProvider',
     'ResourceType',
     // 'AccountId',
     'Name',
     'Region',
     'CreationDate',
-    // 'Tags',
+    'Tags',
   ];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   filterEmitter = new EventEmitter();
@@ -64,7 +63,10 @@ export class ListComponent implements AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.query = filterValue.trim().toLowerCase();
-    this.filterEmitter.emit();
+    const query = filterValue.trim().toLowerCase();
+    if (query !== this.query) {
+      this.query = query;
+      this.filterEmitter.emit();
+    }
   }
 }
