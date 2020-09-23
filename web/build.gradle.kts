@@ -19,7 +19,7 @@ val runWeb by tasks.creating(NpmTask::class) {
   setArgs(mutableListOf("run", "start"))
 }
 
-tasks.create("buildWebImage", DockerBuildImage::class) {
+val buildWebImage by tasks.creating(DockerBuildImage::class) {
   inputDir.set(file("./"))
   images.add("cloud-resource-dashboard/web:latest")
 }
