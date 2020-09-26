@@ -6,16 +6,19 @@ plugins {
   id("com.bmuschko.docker-remote-api") version "6.6.1"
 }
 
-node {
-}
+node {}
 
 val killWebServer by tasks.creating(Exec::class) {
-  commandLine("bash", "-c", "lsof -i:4200 -t | xargs kill")
+  commandLine("sh", "-c", "lsof -i:4200 -t | xargs kill")
   setIgnoreExitValue(true)
 }
 
+val build by tasks.creating(NpmTask::class) {
+  setArgs(mutableListOf("install"))
+}
+
 val runWeb by tasks.creating(NpmTask::class) {
-  dependsOn(killWebServer)
+  dependsOn(killWebServer, build)
   setArgs(mutableListOf("run", "start"))
 }
 
