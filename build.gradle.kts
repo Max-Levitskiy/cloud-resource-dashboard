@@ -3,6 +3,7 @@ import org.unbrokendome.gradle.plugins.helm.command.tasks.HelmUninstall
 
 plugins {
     id("org.unbroken-dome.helm") version "1.2.0"
+    id("com.wiredforcode.spawn") version "0.8.2"
 }
 
 buildscript {
@@ -59,17 +60,7 @@ val uninstallLogstashChart by tasks.creating(HelmUninstall::class) {
     releaseName.value("logstash")
 }
 
-val installKubelessChart by tasks.creating(HelmInstall::class) {
-    chart.value("incubator/kubeless")
-    releaseName.value("kubeless")
-//    namespace.value("kubeless")
-}
-
-val uninstallKubelessChart by tasks.creating(HelmUninstall::class) {
-    releaseName.value("kubeless")
-}
-
-val installElkCharts: Task by tasks.creating() {
+val installElkCharts: Task by tasks.creating {
     dependsOn(installLogstashChart, installElasticsearchChart)
 }
 
@@ -78,9 +69,13 @@ val uninstallElkCharts: Task by tasks.creating() {
 }
 
 val clean: Task by tasks.creating {
-    dependsOn(uninstallElkCharts, uninstallKubelessChart)
+    dependsOn(uninstallElkCharts)
 }
 
-val runDev by tasks.creating {
-    dependsOn(installElkCharts, installKubelessChart, "web:runWeb")
+val runAll by tasks.creating {
+    dependsOn(
+            installElkCharts
+//            "web:runWeb",
+//            "back:api:runApi"
+    )
 }
