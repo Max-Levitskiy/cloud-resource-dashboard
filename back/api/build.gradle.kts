@@ -41,6 +41,6 @@ val runApi by tasks.creating(Exec::class) {
 }
 
 val buildApiImage by tasks.creating(DockerBuildImage::class) {
-inputDir.set(file("./"))
-images.add("cloud-resource-dashboard/api:latest")
+    inputDir.set(file("./"))
+    images.add("cloud-resource-dashboard/api:latest")
 }
