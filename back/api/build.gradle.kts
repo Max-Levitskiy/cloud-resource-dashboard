@@ -35,7 +35,12 @@ val build: Task by tasks.creating {
     dependsOn("buildHandlers")
 }
 
+val runApi by tasks.creating(Exec::class) {
+    dependsOn(build)
+    commandLine("bin/api")
+}
+
 val buildApiImage by tasks.creating(DockerBuildImage::class) {
-    inputDir.set(file("./"))
-    images.add("cloud-resource-dashboard/api:latest")
+inputDir.set(file("./"))
+images.add("cloud-resource-dashboard/api:latest")
 }
