@@ -18,5 +18,5 @@ val runApi by tasks.creating(SpawnProcessTask::class) {
 
 val buildApiImage by tasks.creating(DockerBuildImage::class) {
     inputDir.set(file("./"))
-    images.add("cloud-resource-dashboard/api:latest")
+    images.add("cloudresourcedashboard/api:latest")
 }

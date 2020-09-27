@@ -61,7 +61,10 @@ val uninstallLogstashChart by tasks.creating(HelmUninstall::class) {
 }
 
 val installElkCharts: Task by tasks.creating {
-    dependsOn(installLogstashChart, installElasticsearchChart)
+    dependsOn(
+//            installLogstashChart,
+            installElasticsearchChart
+    )
 }
 
 val uninstallElkCharts: Task by tasks.creating() {
@@ -74,7 +77,9 @@ val clean: Task by tasks.creating {
 
 val runAll by tasks.creating {
     dependsOn(
-            installElkCharts
+            installElkCharts,
+            "back:api:buildApiImage",
+            "web:buildWebImage"
 //            "web:runWeb",
 //            "back:api:runApi"
     )
