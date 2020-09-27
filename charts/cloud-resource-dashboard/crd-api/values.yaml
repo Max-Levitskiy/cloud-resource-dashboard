@@ -32,7 +32,8 @@ securityContext: {}
 
 service:
   type: NodePort
-  port: 80
+  port: 8080
+  nodePort: 30081
 
 ingress:
   enabled: false
