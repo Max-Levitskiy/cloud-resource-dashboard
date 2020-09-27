@@ -5,6 +5,17 @@ import (
 	"time"
 )
 
+type IResource interface {
+	getId() string
+	getCloudProvider() string
+	getResourceType() string
+	getAccountId() *string
+	getName() *string
+	getRegion() *string
+	getCreationDate() *time.Time
+	getTags() map[string]string
+}
+
 type Resource struct {
 	Id            string
 	CloudProvider string

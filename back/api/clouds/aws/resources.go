@@ -138,6 +138,7 @@ func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string,
 	}
 	return resources
 }
+
 func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []model.Resource {
 	var resources = make([]model.Resource, len(volumes))
 	for i, volume := range volumes {
