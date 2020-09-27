@@ -25,9 +25,10 @@ func (e *elastic) SaveResource(resource model.Resource) {
 	if err != nil {
 		log.Panic(err)
 	}
+	resource.CloudId = resource.GenerateId()
 	req := esapi.IndexRequest{
 		Index:      conf.Inst.Elastic.Index.Resource.Name,
-		DocumentID: resource.GenerateId(),
+		DocumentID: resource.CloudId,
 		Body:       bytes.NewReader(marshal),
 		Refresh:    "true",
 	}
@@ -69,7 +70,7 @@ func (e *elastic) GetResourceById(documentId string) *model.Resource {
 		if err := json.NewDecoder(res.Body).Decode(&resource); err != nil {
 			log.Panic(err)
 		}
-		resource.Source.Id = resource.Id
+		resource.Source.CloudId = resource.Id
 		return &resource.Source
 	} else {
 		log.Panic(err)
@@ -94,8 +95,8 @@ func (e *elastic) BulkSave(resources []model.Resource) {
 
 	for i, resource := range resources {
 		numItems++
-
-		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%s" } }%s`, resource.GenerateId(), "\n"))
+		resource.CloudId = resource.GenerateId()
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%s" } }%s`, resource.CloudId, "\n"))
 
 		currBatch = i / batch
 		if i == count-1 {
@@ -197,7 +198,7 @@ func (e *elastic) updateIndexMapping() {
 		Body: bytes.NewBuffer([]byte(`
 		{
 			"properties": {
-				"Name": {
+				"ResourceId": {
 					"type": "keyword"
 				},
 				"CreationDate": {

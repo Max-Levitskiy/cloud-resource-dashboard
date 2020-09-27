@@ -6,6 +6,7 @@ import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
@@ -18,13 +19,13 @@ func TestSaveResource(t *testing.T) {
 	resource := getResourceExample()
 	Client.SaveResource(resource)
 
-	resource.Id = resource.GenerateId()
-	savedResource := Client.GetResourceById(resource.Id)
+	resource.CloudId = resource.GenerateId()
+	savedResource := Client.GetResourceById(resource.CloudId)
 
-	assert.Equal(t, resource.Id, savedResource.Id)
-	assert.Equal(t, resource.ResourceType, savedResource.ResourceType)
+	assert.Equal(t, resource.CloudId, savedResource.CloudId)
+	assert.Equal(t, resource.Service, savedResource.Service)
 	assert.Equal(t, resource.AccountId, savedResource.AccountId)
-	assert.Equal(t, resource.Name, savedResource.Name)
+	assert.Equal(t, resource.ResourceId, savedResource.ResourceId)
 	assert.Equal(t, resource.Tags, savedResource.Tags)
 	assert.True(t, resource.CreationDate.Equal(*savedResource.CreationDate))
 }
@@ -36,13 +37,13 @@ func TestBulkSave(t *testing.T) {
 
 	Client.BulkSave([]model.Resource{resource})
 
-	resource.Id = resource.GenerateId()
-	savedResource := Client.GetResourceById(resource.Id)
+	resource.CloudId = resource.GenerateId()
+	savedResource := Client.GetResourceById(resource.CloudId)
 
-	assert.Equal(t, resource.Id, savedResource.Id)
-	assert.Equal(t, resource.ResourceType, savedResource.ResourceType)
+	assert.Equal(t, resource.CloudId, savedResource.CloudId)
+	assert.Equal(t, resource.Service, savedResource.Service)
 	assert.Equal(t, resource.AccountId, savedResource.AccountId)
-	assert.Equal(t, resource.Name, savedResource.Name)
+	assert.Equal(t, resource.ResourceId, savedResource.ResourceId)
 	assert.Equal(t, resource.Tags, savedResource.Tags)
 	assert.True(t, resource.CreationDate.Equal(*savedResource.CreationDate))
 }
@@ -88,19 +89,19 @@ func TestUpdateIndexMapping(t *testing.T) {
 	var body map[string]map[string]map[string]map[string]map[string]string
 	assert.Nil(t, json.NewDecoder(res.Body).Decode(&body))
 
-	assert.Equal(t, "keyword", body["resources"]["mappings"]["properties"]["Name"]["type"])
+	assert.Equal(t, "keyword", body["resources"]["mappings"]["properties"]["ResourceId"]["type"])
 }
 
 func getResourceExample() model.Resource {
 	accountId := "someAccId"
-	name := "aName"
+	name := uuid.New().String()
 	region := "us-east-1"
 	date := time.Now()
 	resource := model.Resource{
 		CloudProvider: "AWS",
-		ResourceType:  "testType",
+		Service:       "testType",
 		AccountId:     &accountId,
-		Name:          &name,
+		ResourceId:    &name,
 		Region:        &region,
 		CreationDate:  &date,
 		Tags:          map[string]string{"a": "b"},

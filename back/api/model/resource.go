@@ -6,16 +6,16 @@ import (
 )
 
 type Resource struct {
-	Id            string
+	CloudId       string
 	CloudProvider string
-	ResourceType  string
+	Service       string
 	AccountId     *string
-	Name          *string
+	ResourceId    *string
 	Region        *string
 	CreationDate  *time.Time
 	Tags          map[string]string
 }
 
 func (r *Resource) GenerateId() string {
-	return strings.Join([]string{r.CloudProvider, r.ResourceType, *r.Region, *r.AccountId, *r.Name}, "-")
+	return strings.Join([]string{r.CloudProvider, r.Service, *r.Region, *r.AccountId, *r.ResourceId}, ":")
 }

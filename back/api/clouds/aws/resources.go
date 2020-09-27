@@ -111,10 +111,10 @@ func s3BucketsToResources(buckets []*s3.Bucket, accountId *string, region *strin
 	for i, bucket := range buckets {
 		resources[i] = model.Resource{
 			CloudProvider: clouds.AWS,
-			ResourceType:  "s3",
+			Service:       "s3",
 			AccountId:     accountId,
 			Region:        region,
-			Name:          bucket.Name,
+			ResourceId:    bucket.Name,
 			CreationDate:  bucket.CreationDate,
 		}
 	}
@@ -127,10 +127,10 @@ func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string,
 		for _, instance := range reservation.Instances {
 			resources[i] = model.Resource{
 				CloudProvider: clouds.AWS,
-				ResourceType:  "ec2",
+				Service:       "ec2",
 				AccountId:     accountId,
 				Region:        region,
-				Name:          instance.InstanceId,
+				ResourceId:    instance.InstanceId,
 				CreationDate:  instance.LaunchTime,
 				Tags:          awsToResourceTags(instance.Tags),
 			}
@@ -144,10 +144,10 @@ func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *s
 
 		resources[i] = model.Resource{
 			CloudProvider: clouds.AWS,
-			ResourceType:  "ebs",
+			Service:       "ebs",
 			AccountId:     accountId,
 			Region:        region,
-			Name:          volume.VolumeId,
+			ResourceId:    volume.VolumeId,
 			CreationDate:  volume.CreateTime,
 			Tags:          awsToResourceTags(volume.Tags),
 		}
