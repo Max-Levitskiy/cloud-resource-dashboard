@@ -14,9 +14,9 @@ import {EsHits} from '../../../model/es/es-hits';
 export class ListComponent implements AfterViewInit {
   displayedColumns: string[] = [
     'CloudProvider',
-    'ResourceType',
+    'Service',
     // 'AccountId',
-    'Name',
+    'ResourceId',
     'Region',
     'CreationDate',
     'Tags',

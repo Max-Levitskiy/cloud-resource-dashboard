@@ -15,13 +15,13 @@
       <th mat-header-cell *matHeaderCellDef>Cloud provider</th>
       <td mat-cell *matCellDef="let element">{{element._source.CloudProvider}}</td>
     </ng-container>
-    <ng-container matColumnDef="ResourceType">
-      <th mat-header-cell *matHeaderCellDef>Resource type</th>
-      <td mat-cell *matCellDef="let element">{{element._source.ResourceType}}</td>
+    <ng-container matColumnDef="Service">
+      <th mat-header-cell *matHeaderCellDef>Service</th>
+      <td mat-cell *matCellDef="let element">{{element._source.Service}}</td>
     </ng-container>
-    <ng-container matColumnDef="Name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">{{element._source.Name}}</td>
+    <ng-container matColumnDef="ResourceId">
+      <th mat-header-cell *matHeaderCellDef>ResourceId</th>
+      <td mat-cell *matCellDef="let element">{{element._source.ResourceId}}</td>
     </ng-container>
     <ng-container matColumnDef="Region">
       <th mat-header-cell *matHeaderCellDef>Region</th>
