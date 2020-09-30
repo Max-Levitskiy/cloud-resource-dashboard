@@ -9,11 +9,10 @@ val build by tasks.creating(Exec::class) {
     commandLine("sh","-c", "go build -o bin/api api.go")
 }
 
-val runApi by tasks.creating(SpawnProcessTask::class) {
+val runApi by tasks.creating(Exec::class) {
     dependsOn(build)
+    commandLine("bin/api")
 
-    setCommand("sh -c cd ${projectDir} && bin/api")
-    setReady("Starting api server")
 }
 
 val buildApiImage by tasks.creating(DockerBuildImage::class) {
