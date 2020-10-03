@@ -12,3 +12,5 @@ RUN npm run build --prod
 # Stage 2
 FROM nginx:1.17.1-alpine
 COPY --from=builder /app/dist/dashboard-web /usr/share/nginx/html
+COPY  ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
