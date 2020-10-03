@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: cloudresroucedashboard/web
+  repository: cloudresourcedashboard/web
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
