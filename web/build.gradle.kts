@@ -24,5 +24,5 @@ val runWeb by tasks.creating(NpmTask::class) {
 
 val buildWebImage by tasks.creating(DockerBuildImage::class) {
   inputDir.set(file("./"))
-  images.add("cloudresourcedashboard/web:latest")
+  images.add("cloudresourcedashboard/web:$version")
 }

@@ -1,4 +1,3 @@
-import com.wiredforcode.gradle.spawn.*
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 plugins {
@@ -12,10 +11,9 @@ val build by tasks.creating(Exec::class) {
 val runApi by tasks.creating(Exec::class) {
     dependsOn(build)
     commandLine("bin/api")
-
 }
 
 val buildApiImage by tasks.creating(DockerBuildImage::class) {
     inputDir.set(file("./"))
-    images.add("cloudresourcedashboard/api:latest")
+    images.add("cloudresourcedashboard/api:$version")
 }
