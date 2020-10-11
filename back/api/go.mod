@@ -5,7 +5,6 @@ go 1.14
 require (
 	github.com/Rican7/retry v0.1.0
 	github.com/aws/aws-sdk-go v1.16.26
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20200901131320-e21ad8e37e8d
 	github.com/google/uuid v1.1.2
 	github.com/kelseyhightower/envconfig v1.4.0
