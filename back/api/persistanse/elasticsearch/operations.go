@@ -198,8 +198,20 @@ func (e *elastic) updateIndexMapping() {
 		Body: bytes.NewBuffer([]byte(`
 		{
 			"properties": {
-				"ResourceId": {
+				"Service": {
 					"type": "keyword"
+				},
+				"Region": {
+					"type": "keyword"
+				},
+				"CloudProvider": {
+					"type": "keyword"
+				},
+				"AccountId": {
+					"type": "keyword"
+				},
+				"Tags": {
+					"type": "flattened"
 				},
 				"CreationDate": {
 					"type": "date"
