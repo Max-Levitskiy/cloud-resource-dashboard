@@ -3,8 +3,8 @@ package conf
 import (
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
-	"log"
 	"os"
 	"strings"
 )
@@ -73,5 +73,5 @@ func readEnv(cfg *config) {
 }
 func processError(err error) {
 	fmt.Println(err)
-	log.Fatal("Can't read config. Exit.")
+	logrus.Fatal("Can't read config. Exit.")
 }

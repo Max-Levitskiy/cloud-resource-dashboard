@@ -166,9 +166,8 @@ func (e *elastic) checkErrors(res *esapi.Response) {
 			log.Panicf("Error parsing the response body: %s", err)
 		} else {
 			log.Println(body)
-			if error, ok := body["error"]; ok {
-				// Print the response status and error information.
-				log.Panicf("[%s] %s", res.Status(), error)
+			if err, ok := body["error"]; ok {
+				log.Panicf("[%s] %s", res.Status(), err)
 			} else if found, ok := body["found"]; ok {
 				if found == false {
 					log.Panicf("Document %s not found in index %s", body["_id"], body["_index"])
