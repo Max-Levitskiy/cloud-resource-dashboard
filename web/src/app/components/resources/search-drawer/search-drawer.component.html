@@ -1,0 +1,11 @@
+<mat-drawer-container class="example-container" autosize>
+  <mat-drawer #advancedSearch mode="side">
+    <input matInput placeholder="Service" />
+  </mat-drawer>
+
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Filter"/>
+  </mat-form-field>
+
+</mat-drawer-container>

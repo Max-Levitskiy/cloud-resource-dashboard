@@ -33,19 +33,19 @@ val uninstallElasticsearchChart by tasks.creating(HelmUninstall::class) {
     releaseName.value("elasticsearch")
 }
 
-// val installKibanaChart by tasks.creating(HelmInstall::class) {
-//     chart.value("elastic/kibana")
-//     releaseName.value("kibana")
-//     values.put("service.type", "NodePort")
-//     values.put("resources.requests.cpu", "100m")
-//     values.put("resources.requests.memory", "100Mi")
-//     values.put("service.nodePort", "30561")
-//     values.put("elasticsearchURL", "http://elasticsearch:9200")
-// }
+ val installKibanaChart by tasks.creating(HelmInstall::class) {
+     chart.value("elastic/kibana")
+     releaseName.value("kibana")
+     values.put("service.type", "NodePort")
+     values.put("resources.requests.cpu", "100m")
+     values.put("resources.requests.memory", "100Mi")
+     values.put("service.nodePort", "30561")
+     values.put("elasticsearchURL", "http://localhost:30920")
+ }
 
-// val uninstallKibanaChart by tasks.creating(HelmUninstall::class) {
-//     releaseName.value("kibana")
-// }
+ val uninstallKibanaChart by tasks.creating(HelmUninstall::class) {
+     releaseName.value("kibana")
+ }
 
 val installLogstashChart by tasks.creating(HelmInstall::class) {
     chart.value("elastic/logstash")

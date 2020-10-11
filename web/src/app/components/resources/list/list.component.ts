@@ -82,4 +82,8 @@ export class ListComponent implements AfterViewInit {
       this.filterEmitter.emit();
     }
   }
+
+  onSubmit($event: any) {
+    return false
+  }
 }

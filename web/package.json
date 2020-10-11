@@ -21,7 +21,9 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
+    "@ngrx/store": "^9.2.0",
     "elasticsearch-browser": "^16.7.1",
+    "ngrx-forms": "^6.3.3",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

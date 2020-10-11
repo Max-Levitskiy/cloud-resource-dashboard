@@ -17,13 +17,16 @@ import {MatButtonModule} from '@angular/material/button';
 import {HttpClientModule} from '@angular/common/http';
 import { ControlButtonsComponent } from './components/api/control-buttons/control-buttons.component';
 import {MatSortModule} from '@angular/material/sort';
+import { StoreModule } from '@ngrx/store';
+import { SearchDrawerComponent } from './components/resources/search-drawer/search-drawer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ListComponent,
     StatusComponent,
-    ControlButtonsComponent
+    ControlButtonsComponent,
+    SearchDrawerComponent
   ],
     imports: [
         BrowserModule,
@@ -31,16 +34,17 @@ import {MatSortModule} from '@angular/material/sort';
         BrowserAnimationsModule,
         HttpClientModule,
 
-        MatTableModule,
-        MatPaginatorModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatToolbarModule,
-        MatSidenavModule,
-        MatButtonModule,
-        MatSortModule,
-    ],
+    MatTableModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatSortModule,
+    StoreModule.forRoot({}, {}),
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })
