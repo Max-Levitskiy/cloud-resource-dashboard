@@ -2,11 +2,13 @@ import {AfterViewInit, Component, EventEmitter, ViewChild} from '@angular/core';
 import {ResourceService} from '../../../services/resource.service';
 import {Resource} from '../../../model/resource';
 import {MatPaginator} from '@angular/material/paginator';
-import {merge} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {map, startWith, switchMap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
 import {MatSort} from '@angular/material/sort';
 import {QueryParams, SortParam} from '../../../model/es/es-query';
+import {SearchParams} from '../../../ngrx/reducers/resource/set-search-parameters.reducer';
+import {Store} from '@ngrx/store';
 
 @Component({
   selector: 'app-list',
@@ -31,8 +33,10 @@ export class ListComponent implements AfterViewInit {
   total = 0;
   isLoadingResults = true;
   private query: string;
+  private params$: Observable<SearchParams>;
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService, private store: Store<SearchParams>) {
+    this.params$ = store.pipe();
   }
 
   ngAfterViewInit(): void {
