@@ -19,6 +19,7 @@ import { ControlButtonsComponent } from './components/api/control-buttons/contro
 import {MatSortModule} from '@angular/material/sort';
 import { StoreModule } from '@ngrx/store';
 import { SearchDrawerComponent } from './components/resources/search-drawer/search-drawer.component';
+import {searchParamsReducer} from './ngrx/reducers/resource/set-search-parameters.reducer';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,9 @@ import { SearchDrawerComponent } from './components/resources/search-drawer/sear
     MatSidenavModule,
     MatButtonModule,
     MatSortModule,
-    StoreModule.forRoot({}, {}),
+    StoreModule.forRoot({
+      searchParamsReducer
+    }, {}),
   ],
   providers: [],
   bootstrap: [AppComponent]
