@@ -24,6 +24,7 @@ func FullScan() {
 		go scanEBS(accountId, region)
 		go scanElb(accountId, region)
 		go scanLambdaFunctions(accountId, region)
+		go scanVpc(accountId, region)
 	}
 }
 
