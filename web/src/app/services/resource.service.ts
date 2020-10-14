@@ -16,6 +16,7 @@ export class ResourceService {
       const params: SearchParams = {
         index: environment.es.index.resource.name,
         from,
+        size: 20
       };
       if (query) {
         params.q = query;
