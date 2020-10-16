@@ -209,6 +209,9 @@ func (e *elastic) updateIndexMapping() {
 				"AccountId": {
 					"type": "keyword"
 				},
+				"ResourceId": {
+					"type": "keyword"
+				},
 				"Tags": {
 					"type": "flattened"
 				},
