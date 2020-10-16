@@ -5,6 +5,8 @@ import {MatPaginator} from '@angular/material/paginator';
 import {merge} from 'rxjs';
 import {map, startWith, switchMap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
+import {MatSort} from '@angular/material/sort';
+import {QueryParams, SortParam} from '../../../model/es/es-query';
 
 @Component({
   selector: 'app-list',
@@ -22,6 +24,7 @@ export class ListComponent implements AfterViewInit {
     'Tags',
   ];
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   filterEmitter = new EventEmitter();
 
   resources: EsHits<Resource>[] = [];
@@ -34,14 +37,24 @@ export class ListComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    merge(this.paginator.page, this.filterEmitter)
+    merge(this.paginator.page, this.sort.sortChange, this.filterEmitter)
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
+          const queryParams: QueryParams = {
+            query: this.query,
+            size: this.paginator.pageSize,
+            from: this.paginator.pageIndex * this.paginator.pageSize,
+          };
+          console.log(this.sort)
+          if (this.sort.active && this.sort.direction) {
+            const sortParam: SortParam = {}
+            sortParam[this.sort.active] = this.sort.direction
+            queryParams.sort = sortParam
+          }
           return this.resourceService.fetchResources(
-            this.paginator.pageIndex * this.paginator.pageSize,
-            this.query
+            queryParams
           );
         }),
         map(data => {

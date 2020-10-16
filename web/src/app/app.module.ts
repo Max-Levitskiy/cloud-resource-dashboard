@@ -16,6 +16,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatButtonModule} from '@angular/material/button';
 import {HttpClientModule} from '@angular/common/http';
 import { ControlButtonsComponent } from './components/api/control-buttons/control-buttons.component';
+import {MatSortModule} from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -24,21 +25,22 @@ import { ControlButtonsComponent } from './components/api/control-buttons/contro
     StatusComponent,
     ControlButtonsComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
 
-    MatTableModule,
-    MatPaginatorModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatButtonModule,
-  ],
+        MatTableModule,
+        MatPaginatorModule,
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatButtonModule,
+        MatSortModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
