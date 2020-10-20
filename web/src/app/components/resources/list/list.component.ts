@@ -7,8 +7,10 @@ import {map, startWith, switchMap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
 import {MatSort} from '@angular/material/sort';
 import {QueryParams, SortParam} from '../../../model/es/es-query';
-import {SearchParams} from '../../../ngrx/reducers/resource/set-search-parameters.reducer';
 import {Store} from '@ngrx/store';
+import {FormGroupControls, FormGroupState} from 'ngrx-forms';
+import {State} from '../../../reducers';
+import {SearchParams} from '../../../forms/search-drawer-form';
 
 @Component({
   selector: 'app-list',
@@ -33,29 +35,33 @@ export class ListComponent implements AfterViewInit {
   total = 0;
   isLoadingResults = true;
   private query: string;
-  private params$: Observable<SearchParams>;
+  form$: Observable<FormGroupState<SearchParams>>;
+  private controls: FormGroupControls<SearchParams>;
 
-  constructor(private resourceService: ResourceService, private store: Store<SearchParams>) {
-    this.params$ = store.pipe();
+  constructor(private resourceService: ResourceService, private store: Store<State>) {
+    this.form$ = this.store.select('searchForm');
   }
 
   ngAfterViewInit(): void {
-
-    merge(this.paginator.page, this.sort.sortChange, this.filterEmitter)
+    this.form$.subscribe(form => this.controls = form.controls);
+    merge(this.paginator.page, this.sort.sortChange, this.form$)
       .pipe(
         startWith({}),
-        switchMap(() => {
+        switchMap((value) => {
           this.isLoadingResults = true;
           const queryParams: QueryParams = {
-            query: this.query,
+            query: this.controls.query.value,
             size: this.paginator.pageSize,
             from: this.paginator.pageIndex * this.paginator.pageSize,
           };
-          console.log(this.sort)
+          if (this.controls.service.value) {
+            queryParams.terms = new Map<string, string>();
+            queryParams.terms.set('Service', this.controls.service.value);
+          }
           if (this.sort.active && this.sort.direction) {
-            const sortParam: SortParam = {}
-            sortParam[this.sort.active] = this.sort.direction
-            queryParams.sort = sortParam
+            const sortParam: SortParam = {};
+            sortParam[this.sort.active] = this.sort.direction;
+            queryParams.sort = sortParam;
           }
           return this.resourceService.fetchResources(
             queryParams
@@ -79,15 +85,11 @@ export class ListComponent implements AfterViewInit {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    const query = filterValue.trim().toLowerCase();
-    if (query !== this.query) {
-      this.query = query;
-      this.filterEmitter.emit();
-    }
-  }
-
-  onSubmit($event: any) {
-    return false
+    // const filterValue = (event.target as HTMLInputElement).value;
+    // const query = filterValue.trim().toLowerCase();
+    // if (query !== this.query) {
+    //   this.query = query;
+    //   this.filterEmitter.emit();
+    // }
   }
 }

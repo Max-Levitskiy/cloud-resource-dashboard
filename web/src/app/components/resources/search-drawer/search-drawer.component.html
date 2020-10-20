@@ -1,11 +1,10 @@
 <mat-drawer-container class="example-container" autosize>
   <mat-drawer #advancedSearch mode="side">
-    <input matInput placeholder="Service" />
+    <mat-form-field>
+      <mat-label>Service</mat-label>
+      <input matInput placeholder="Service" [ngrxFormControlState]="(form$ | async).controls.service"/>
+    </mat-form-field>
   </mat-drawer>
-
-  <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Filter"/>
-  </mat-form-field>
-
+  <button mat-button (click)="advancedSearch.toggle()">Show advancedSearch</button>
+  <ng-content></ng-content>
 </mat-drawer-container>
