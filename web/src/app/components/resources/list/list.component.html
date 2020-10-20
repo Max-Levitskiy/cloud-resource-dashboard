@@ -2,23 +2,19 @@
   <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
 </div>
 
-<form (submit)="$event.preventDefault()">
-  <mat-drawer-container class="example-container" autosize>
-    <mat-drawer #advancedSearch mode="side">
-      <input matInput placeholder="Service" />
-    </mat-drawer>
+<app-search-drawer>
+  <form (submit)="$event.preventDefault()" [ngrxFormState]="form$ | async">
 
     <mat-form-field>
       <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Filter"/>
+      <input matInput [ngrxFormControlState]="(form$ | async).controls.query" placeholder="Filter"/>
     </mat-form-field>
-    <br />
-    <button mat-button type="button" (click)="advancedSearch.toggle()">Show advancedSearch</button>
+    <br/>
     <table
       mat-table
       [dataSource]="resources"
       matSort
-    class="mat-elevation-z8">
+      class="mat-elevation-z8">
 
       <ng-container matColumnDef="CloudProvider">
         <th mat-sort-header mat-header-cell *matHeaderCellDef>Cloud provider</th>
@@ -52,5 +48,5 @@
 
     </table>
     <mat-paginator [length]="total" [pageSize]="20" showFirstLastButtons></mat-paginator>
-  </mat-drawer-container>
-</form>
+  </form>
+</app-search-drawer>

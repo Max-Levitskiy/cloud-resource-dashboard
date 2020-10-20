@@ -23,6 +23,14 @@ export class ResourceService {
       };
       params.body = {
         sort: queryParams.sort
+      };
+
+      if (queryParams.terms) {
+        params.body.query = {term: {}};
+        queryParams
+          .terms
+          .forEach((value, key) =>
+            params.body.query.term[key] = {value});
       }
 
       if (queryParams.query) {
