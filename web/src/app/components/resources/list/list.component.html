@@ -12,7 +12,7 @@
     <br/>
     <table
       mat-table
-      [dataSource]="resources"
+      [dataSource]="resources | async"
       matSort
       class="mat-elevation-z8">
 
