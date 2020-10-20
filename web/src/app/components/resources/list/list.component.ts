@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, EventEmitter, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ResourceService} from '../../../services/resource.service';
 import {Resource} from '../../../model/resource';
 import {MatPaginator} from '@angular/material/paginator';
-import {merge, Observable} from 'rxjs';
-import {map, startWith, switchMap} from 'rxjs/operators';
+import {merge, observable, Observable, of, Subscription} from 'rxjs';
+import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
 import {MatSort} from '@angular/material/sort';
 import {QueryParams, SortParam} from '../../../model/es/es-query';
@@ -15,9 +15,10 @@ import {SearchParams} from '../../../forms/search-drawer-form';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  styleUrls: ['./list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListComponent implements AfterViewInit {
+export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
   displayedColumns: string[] = [
     'CloudProvider',
     'Service',
@@ -29,22 +30,28 @@ export class ListComponent implements AfterViewInit {
   ];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  filterEmitter = new EventEmitter();
 
-  resources: EsHits<Resource>[] = [];
+  resources: Observable<EsHits<Resource>[]>;
   total = 0;
   isLoadingResults = true;
-  private query: string;
   form$: Observable<FormGroupState<SearchParams>>;
   private controls: FormGroupControls<SearchParams>;
+  private formSubscription: Subscription;
 
   constructor(private resourceService: ResourceService, private store: Store<State>) {
+  }
+
+  ngOnInit(): void {
     this.form$ = this.store.select('searchForm');
   }
 
+  ngOnDestroy(): void {
+    this.formSubscription?.unsubscribe();
+  }
+
   ngAfterViewInit(): void {
-    this.form$.subscribe(form => this.controls = form.controls);
-    merge(this.paginator.page, this.sort.sortChange, this.form$)
+    this.formSubscription = this.form$.subscribe(form => this.controls = form.controls);
+    this.resources = merge(this.paginator.page, this.sort.sortChange, this.form$)
       .pipe(
         startWith({}),
         switchMap((value) => {
@@ -72,24 +79,14 @@ export class ListComponent implements AfterViewInit {
           // TODO: Remove ts-ignore after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/47812 will be merged
           // @ts-ignore
           this.total = data.hits.total.value;
-          return data;
+          console.log(data);
+          return data.hits.hits;
         }),
-        // catchError(() => {
-        //   this.isLoadingResults = false;
-        //   // Catch if the GitHub API has reached its rate limit. Return empty data.
-        //   // this.isRateLimitReached = true;
-        //   return observableOf([]);
-        // })
-      )
-      .subscribe(searchResponse => this.resources = searchResponse.hits.hits);
+        catchError(() => {
+          this.isLoadingResults = false;
+          return of([]);
+        })
+      );
   }
 
-  applyFilter(event: Event) {
-    // const filterValue = (event.target as HTMLInputElement).value;
-    // const query = filterValue.trim().toLowerCase();
-    // if (query !== this.query) {
-    //   this.query = query;
-    //   this.filterEmitter.emit();
-    // }
-  }
 }
