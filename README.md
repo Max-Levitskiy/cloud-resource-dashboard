@@ -24,7 +24,6 @@ helm install cloud-resource-dashboard .
 ### Run elastic search
 ```shell script
 ./gradlew installElasticsearchChart
-
 ```
 
 ### Run web interface
@@ -43,6 +42,7 @@ ng s
 ```
 
 ### Run API server
+It will be run with current AWS account settings
 ```shell script
 ./gradlew runWeb
 ```
