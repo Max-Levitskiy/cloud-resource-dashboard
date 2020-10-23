@@ -7,7 +7,7 @@ COPY package.json /app
 COPY package-lock.json /app
 RUN npm ci
 COPY . /app
-RUN npm run build --prod
+RUN npm run build-prod
 
 # Stage 2
 FROM nginx:1.17.1-alpine
