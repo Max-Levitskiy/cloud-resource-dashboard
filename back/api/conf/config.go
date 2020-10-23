@@ -27,16 +27,18 @@ var Inst = initConfig()
 func initConfig() config {
 	var cfg = config{}
 	confPostfix := os.Getenv("CONFIG_FILE_POSTFIX")
-	readFile(&cfg, confPostfix)
-	readEnv(&cfg)
+	addConfigs(&cfg, "", confPostfix)
 	return cfg
 }
 
 func AddConfigs(filesPostfixes ...string) {
+	addConfigs(&Inst, filesPostfixes...)
+}
+func addConfigs(config *config, filesPostfixes ...string) {
 	for _, postfix := range filesPostfixes {
-		readFile(&Inst, postfix)
+		readFile(config, postfix)
 	}
-	readEnv(&Inst)
+	readEnv(config)
 }
 
 func Reset() {

@@ -11,6 +11,7 @@ func TestConfig(t *testing.T) {
 	tests := []func(t *testing.T){
 		shouldInitFieldsByDefault,
 		shouldAddConfig,
+		shouldOverrideDefaultFromFile,
 		shouldResetConfig,
 		shouldOverrideConfigFromEnv,
 		shouldOverrideFilesByEnv,
@@ -29,6 +30,17 @@ func shouldAddConfig(t *testing.T) {
 	AddConfigs("test")
 
 	assert.Equal(t, "resources_test", Inst.Elastic.Index.Resource.Name)
+}
+
+func shouldOverrideDefaultFromFile(t *testing.T) {
+	assert.Nil(t, os.Setenv("CONFIG_FILE_POSTFIX", "test"))
+
+	Reset()
+	assert.Equal(t, "resources_test", Inst.Elastic.Index.Resource.Name)
+	assert.Equal(t, 30920, Inst.Elastic.Port)
+
+	// teardown
+	assert.Nil(t, os.Unsetenv("CONFIG_FILE_POSTFIX"))
 }
 
 func shouldResetConfig(t *testing.T) {
