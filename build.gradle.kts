@@ -2,7 +2,8 @@ import org.unbrokendome.gradle.plugins.helm.command.tasks.HelmInstall
 import org.unbrokendome.gradle.plugins.helm.command.tasks.HelmUninstall
 
 plugins {
-    id("org.unbroken-dome.helm") version "1.2.0"
+    id("org.unbroken-dome.helm") version "1.3.0"
+    id("org.unbroken-dome.helm-releases") version "1.3.0"
     id("com.wiredforcode.spawn") version "0.8.2"
 }
 
@@ -13,6 +14,20 @@ buildscript {
 }
 
 helm {
+    val cloudResourceDashboardChart by charts.creating {
+        chartName.set("cloud-resource-dashboard")
+        sourceDir.set(file("charts/cloud-resource-dashboard"))
+    }
+
+    releases {
+        create("cloud-resource-dashboard") {
+            from(cloudResourceDashboardChart)
+        }
+    }
+
+    downloadClient {
+        enabled.set(true)
+    }
     repositories {
         helmStable()
         helmIncubator()
@@ -22,6 +37,7 @@ helm {
         }
     }
 }
+
 
 val installElasticsearchChart by tasks.creating(HelmInstall::class) {
     chart.value("elastic/elasticsearch")
