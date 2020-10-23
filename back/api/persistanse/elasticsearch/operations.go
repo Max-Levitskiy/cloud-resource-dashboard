@@ -148,7 +148,7 @@ func getClient() *elasticsearch.Client {
 	log.Println("Create new ES client")
 	es, err := elasticsearch.NewClient(elasticsearch.Config{
 		Addresses: []string{
-			"http://127.0.0.1:30920",
+			fmt.Sprintf("http://%s:%d", conf.Inst.Elastic.Server, conf.Inst.Elastic.Port),
 		},
 	})
 	if err == nil {
