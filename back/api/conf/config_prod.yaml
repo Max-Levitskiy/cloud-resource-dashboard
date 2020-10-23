@@ -1,0 +1,4 @@
+elastic:
+  server: "elasticsearch-headless"
+  port: 9200
+
