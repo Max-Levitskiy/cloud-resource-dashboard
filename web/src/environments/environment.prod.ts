@@ -12,6 +12,6 @@ export const environment = {
   },
   api: {
     host: 'http://localhost',
-    port: 8080
+    port: 30081
   }
 };
