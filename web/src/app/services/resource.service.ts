@@ -15,7 +15,6 @@ export class ResourceService {
 
   fetchResources(queryParams: QueryParams): Promise<SearchResponse<Resource>> {
     return this.es.getClient().then(client => {
-
       const params: SearchParams = {
         index: environment.es.index.resource.name,
         from: queryParams.from,
@@ -36,7 +35,10 @@ export class ResourceService {
       if (queryParams.query) {
         params.q = queryParams.query;
       }
-      return client.search(params);
+      let search: Promise<SearchResponse<Resource>>;
+      search = client.search(params);
+      search.then(value => console.log(value))
+      return search;
     });
   }
 }

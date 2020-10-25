@@ -4,15 +4,13 @@
 
 <app-search-drawer>
   <form (submit)="$event.preventDefault()" [ngrxFormState]="form$ | async">
-
     <mat-form-field>
       <mat-label>Filter</mat-label>
       <input matInput [ngrxFormControlState]="(form$ | async).controls.query" placeholder="Filter"/>
     </mat-form-field>
-    <br/>
     <table
       mat-table
-      [dataSource]="resources | async"
+      [dataSource]="resources$ | async"
       matSort
       class="mat-elevation-z8">
 

@@ -2,8 +2,8 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, Vi
 import {ResourceService} from '../../../services/resource.service';
 import {Resource} from '../../../model/resource';
 import {MatPaginator} from '@angular/material/paginator';
-import {merge, observable, Observable, of, Subscription} from 'rxjs';
-import {catchError, map, startWith, switchMap} from 'rxjs/operators';
+import {merge, Observable, of, Subscription} from 'rxjs';
+import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {EsHits} from '../../../model/es/es-hits';
 import {MatSort} from '@angular/material/sort';
 import {QueryParams, SortParam} from '../../../model/es/es-query';
@@ -31,7 +31,7 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  resources: Observable<EsHits<Resource>[]>;
+  resources$: Observable<EsHits<Resource>[]>;
   total = 0;
   isLoadingResults = true;
   form$: Observable<FormGroupState<SearchParams>>;
@@ -46,16 +46,15 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.formSubscription?.unsubscribe();
+    this.formSubscription.unsubscribe();
   }
 
   ngAfterViewInit(): void {
-    this.formSubscription = this.form$.subscribe(form => this.controls = form.controls);
-    this.resources = merge(this.paginator.page, this.sort.sortChange, this.form$)
+    this.resources$ = merge(this.paginator.page, this.sort.sortChange, this.form$)
       .pipe(
         startWith({}),
-        switchMap((value) => {
-          this.isLoadingResults = true;
+        tap(() => this.isLoadingResults = true),
+        map(() => {
           const queryParams: QueryParams = {
             query: this.controls.query.value,
             size: this.paginator.pageSize,
@@ -70,16 +69,14 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
             sortParam[this.sort.active] = this.sort.direction;
             queryParams.sort = sortParam;
           }
-          return this.resourceService.fetchResources(
-            queryParams
-          );
+          return queryParams;
         }),
+        switchMap((queryParams) => this.resourceService.fetchResources(queryParams)),
         map(data => {
           this.isLoadingResults = false;
           // TODO: Remove ts-ignore after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/47812 will be merged
           // @ts-ignore
           this.total = data.hits.total.value;
-          console.log(data);
           return data.hits.hits;
         }),
         catchError(() => {
@@ -87,6 +84,7 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
           return of([]);
         })
       );
+    this.formSubscription = this.form$.subscribe(form => this.controls = form.controls);
   }
 
 }
