@@ -19,14 +19,14 @@ helm dependency build
 helm install cloud-resource-dashboard .
 ```
 
-## Dev mode
+# Development
 
-### Run elastic search
+### Run elastic search (k8s)
 ```shell script
 ./gradlew installElasticsearchChart
 ```
 
-### Run web interface
+### Run web interface (Using Angular CLI serve command)
 ```shell script
 ./gradlew runWeb
 ```
