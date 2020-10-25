@@ -14,6 +14,10 @@ spec:
       labels:
         {{- include "crd-api.selectorLabels" . | nindent 8 }}
     spec:
+      volumes:
+        - name: aws-credentials
+          secret:
+            secretName: "aws-credentials"
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -30,6 +34,9 @@ spec:
           env:
             - name: CONFIG_FILE_POSTFIX
               value: prod
+          volumeMounts:
+            - mountPath: /root/.aws
+              name: aws-credentials
           ports:
             - name: http
               containerPort: 8080
