@@ -16,7 +16,7 @@ func scanLambdaFunctions(accountId *string, region string) {
 		resources := LambdaInstancesToResources(lambdaList.Volumes, accountId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
-	logrus.Infof("Scan LambdaFuntions for %s region finished", region)
+	logrus.Infof("Scan LambdaFunctions for %s region finished", region)
 }
 
 func ListLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
