@@ -1,8 +1,10 @@
 package conf
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -20,6 +22,9 @@ type config struct {
 			} `yaml:"resource"`
 		} `yaml:"index"`
 	} `yaml:"elastic"`
+	AWS struct {
+		ProfileNames []string
+	}
 }
 
 var Inst = initConfig()
@@ -28,7 +33,32 @@ func initConfig() config {
 	var cfg = config{}
 	confPostfix := os.Getenv("CONFIG_FILE_POSTFIX")
 	addConfigs(&cfg, "", confPostfix)
+	readAwsProfiles(&cfg)
 	return cfg
+}
+
+func readAwsProfiles(cfg *config) {
+	var configPath string
+	if configPath = os.Getenv("AWS_CONFIG_PATH"); configPath == "" {
+		if homeDir, err := homedir.Dir(); err != nil {
+			logrus.Error(err)
+		} else {
+			configPath = homeDir + "/.aws"
+		}
+	}
+	if file, err := os.Open(configPath + "/credentials"); err == nil {
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
+				line = strings.TrimPrefix(line, "[")
+				line = strings.TrimSuffix(line, "]")
+				cfg.AWS.ProfileNames = append(cfg.AWS.ProfileNames, line)
+			}
+		}
+	} else {
+		logrus.Error(err)
+	}
 }
 
 func AddConfigs(filesPostfixes ...string) {
