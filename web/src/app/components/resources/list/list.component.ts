@@ -22,7 +22,7 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
   displayedColumns: string[] = [
     'CloudProvider',
     'Service',
-    // 'AccountId',
+    'AccountId',
     'ResourceId',
     'Region',
     'CreationDate',
