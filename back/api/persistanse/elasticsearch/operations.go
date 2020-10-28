@@ -78,7 +78,7 @@ func (e *elastic) GetResourceById(documentId string) *model.Resource {
 	}
 }
 
-func (e *elastic) BulkSave(resources []model.Resource) {
+func (e *elastic) BulkSave(resources []*model.Resource) {
 	log.Println("Start bulk save")
 	var (
 		buf bytes.Buffer
@@ -102,7 +102,7 @@ func (e *elastic) BulkSave(resources []model.Resource) {
 		if i == count-1 {
 			currBatch++
 		}
-		data := append(e.toJson(resource), "\n"...)
+		data := append(e.toJson(*resource), "\n"...)
 
 		buf.Grow(len(meta) + len(data))
 		buf.Write(meta)

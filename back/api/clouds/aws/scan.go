@@ -2,13 +2,28 @@ package aws
 
 import (
 	"fmt"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"log"
+	"reflect"
 )
 
 var awsRegions = getAwsRegions()
+
+type regionalResourceScanner interface {
+	scan(accountId *string, region string, profileName string)
+}
+type globalResourceScanner interface {
+	scan(accountId *string, profileName *string)
+}
+
+const defaultRegion = "us-east-1"
+
+var regionGlobalScanners = []globalResourceScanner{
+	s3Scanner{},
+}
 
 func FullScan() {
 	defer func() {
@@ -17,19 +32,29 @@ func FullScan() {
 		}
 	}()
 	log.Println("Start AWS scan")
-	accountId := getAccountId()
-	for _, region := range awsRegions {
-		go scanS3(accountId, region)
-		go scanEc2(accountId, region)
-		go scanEBS(accountId, region)
-		go scanElb(accountId, region)
-		go scanLambdaFunctions(accountId, region)
-		go scanVpc(accountId, region)
+	for _, profileName := range conf.Inst.AWS.ProfileNames {
+		accountId := getAccountId(profileName)
+		for _, scanner := range regionGlobalScanners {
+			go func(s globalResourceScanner, accountId *string, profileName *string) {
+				scannerType := reflect.TypeOf(s).String()
+				log.Printf("Starting %s scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
+				s.scan(accountId, profileName)
+				log.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *accountId)
+			}(scanner, accountId, profileName)
+		}
+		for _, region := range awsRegions {
+			//go scanS3(accountId, region, profileName)
+			go scanEc2(accountId, region)
+			go scanEBS(accountId, region)
+			go scanElb(accountId, region)
+			go scanLambdaFunctions(accountId, region)
+			go scanVpc(accountId, region)
+		}
 	}
 }
 
-func getAccountId() *string {
-	s := sts.New(getSession("us-east-1"))
+func getAccountId(profileName *string) *string {
+	s := sts.New(getSession(defaultRegion, profileName))
 	identity, err := s.GetCallerIdentity(&sts.GetCallerIdentityInput{})
 	if err == nil {
 		return identity.Account

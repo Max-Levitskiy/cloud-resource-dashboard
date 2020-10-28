@@ -23,7 +23,7 @@ type config struct {
 		} `yaml:"index"`
 	} `yaml:"elastic"`
 	AWS struct {
-		ProfileNames []string
+		ProfileNames []*string
 	}
 }
 
@@ -53,7 +53,7 @@ func readAwsProfiles(cfg *config) {
 			if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
 				line = strings.TrimPrefix(line, "[")
 				line = strings.TrimSuffix(line, "]")
-				cfg.AWS.ProfileNames = append(cfg.AWS.ProfileNames, line)
+				cfg.AWS.ProfileNames = append(cfg.AWS.ProfileNames, &line)
 			}
 		}
 	} else {
