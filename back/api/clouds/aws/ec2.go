@@ -32,11 +32,11 @@ func ListEC2(region string) (*ec2.DescribeInstancesOutput, error) {
 	}
 }
 
-func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string, region *string) []model.Resource {
-	var resources = make([]model.Resource, len(reservations))
+func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string, region *string) []*model.Resource {
+	var resources = make([]*model.Resource, len(reservations))
 	for i, reservation := range reservations {
 		for _, instance := range reservation.Instances {
-			resources[i] = model.Resource{
+			resources[i] = &model.Resource{
 				CloudProvider: clouds.AWS,
 				Service:       "ec2",
 				AccountId:     accountId,

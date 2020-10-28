@@ -32,11 +32,11 @@ func ListEBS(region string) (*ec2.DescribeVolumesOutput, error) {
 	}
 }
 
-func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []model.Resource {
-	var resources = make([]model.Resource, len(volumes))
+func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []*model.Resource {
+	var resources = make([]*model.Resource, len(volumes))
 	for i, volume := range volumes {
 
-		resources[i] = model.Resource{
+		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "ebs",
 			AccountId:     accountId,

@@ -35,7 +35,7 @@ func TestBulkSave(t *testing.T) {
 
 	resource := getResourceExample()
 
-	Client.BulkSave([]model.Resource{resource})
+	Client.BulkSave([]*model.Resource{&resource})
 
 	resource.CloudId = resource.GenerateId()
 	savedResource := Client.GetResourceById(resource.CloudId)

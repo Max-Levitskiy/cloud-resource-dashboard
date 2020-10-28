@@ -35,11 +35,11 @@ func ListElb(region string) (*elbv2.DescribeLoadBalancersOutput, error) {
 	}
 }
 
-func elbToResources(elbs []*elbv2.LoadBalancer, accountId *string, region *string, tags *map[string]map[string]string) []model.Resource {
-	var resources = make([]model.Resource, len(elbs))
+func elbToResources(elbs []*elbv2.LoadBalancer, accountId *string, region *string, tags *map[string]map[string]string) []*model.Resource {
+	var resources = make([]*model.Resource, len(elbs))
 	for i, elb := range elbs {
 
-		resources[i] = model.Resource{
+		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "elb",
 			AccountId:     accountId,

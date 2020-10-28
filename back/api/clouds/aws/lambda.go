@@ -33,11 +33,11 @@ func ListLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
 	}
 }
 
-func LambdaInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []model.Resource {
-	var resources = make([]model.Resource, len(volumes))
+func LambdaInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []*model.Resource {
+	var resources = make([]*model.Resource, len(volumes))
 	for i, volume := range volumes {
 
-		resources[i] = model.Resource{
+		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "lambda",
 			AccountId:     accountId,

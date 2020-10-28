@@ -35,17 +35,17 @@ func ListVpc(region string) (*ec2.DescribeVpcsOutput, error) {
 	}
 }
 
-func vpcToResources(vpcs []*ec2.Vpc, accountId *string, region *string) []model.Resource {
-	var resources = make([]model.Resource, len(vpcs))
+func vpcToResources(vpcs []*ec2.Vpc, accountId *string, region *string) []*model.Resource {
+	var resources = make([]*model.Resource, len(vpcs))
 	for i, vpc := range vpcs {
 
-		resources[i] = model.Resource{
+		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "vpc",
 			AccountId:     accountId,
 			Region:        region,
 			ResourceId:    vpc.VpcId,
-			Tags:  vpcToResourceTags(vpc.Tags),
+			Tags:          vpcToResourceTags(vpc.Tags),
 		}
 	}
 	return resources
