@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/handlers"
-	"log"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"net/http"
 )
 
 func main() {
 	http.HandleFunc("/ping", handlers.StatusHandler)
 	http.HandleFunc("/resource", handlers.ResourceHandler)
+	http.HandleFunc("/resource/count", handlers.ResourceCountHandler)
 	http.HandleFunc("/resource/scan/full", handlers.FullScanHandler)
 
-	fmt.Println("Starting api server")
+	logger.Info.Print("Starting api server")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
+		logger.Error.Fatal(err)
 	}
 }

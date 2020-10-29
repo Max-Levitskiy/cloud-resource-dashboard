@@ -1,9 +1,14 @@
 package response
 
 import (
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/transform"
 	"log"
 	"net/http"
 )
+
+func WriteAsJson(w http.ResponseWriter, value interface{}) {
+	WriteBytes(w, transform.ToJson(value))
+}
 
 func WriteBytes(w http.ResponseWriter, bytes []byte) {
 	setDefaultHeaders(w)

@@ -12,3 +12,6 @@ type resourceEsResponse struct {
 type elastic struct {
 	es *elasticsearch.Client
 }
+type count struct {
+	Count int `json:"count"`
+}

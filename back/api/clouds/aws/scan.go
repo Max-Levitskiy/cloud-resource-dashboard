@@ -3,10 +3,10 @@ package aws
 import (
 	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"log"
 	"reflect"
 )
 
@@ -31,15 +31,15 @@ func FullScan() {
 			fmt.Println("Recovered in f", r)
 		}
 	}()
-	log.Println("Start AWS scan")
+	logger.Info.Println("Start AWS scan")
 	for _, profileName := range conf.Inst.AWS.ProfileNames {
 		accountId := getAccountId(profileName)
 		for _, scanner := range regionGlobalScanners {
 			go func(s globalResourceScanner, accountId *string, profileName *string) {
 				scannerType := reflect.TypeOf(s).String()
-				log.Printf("Starting %s scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
+				logger.Info.Printf("Starting %s scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
 				s.scan(accountId, profileName)
-				log.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *accountId)
+				logger.Info.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *accountId)
 			}(scanner, accountId, profileName)
 		}
 		for _, region := range awsRegions {
@@ -59,7 +59,7 @@ func getAccountId(profileName *string) *string {
 	if err == nil {
 		return identity.Account
 	} else {
-		log.Panic(err)
+		logger.Error.Panic(err)
 		return nil
 	}
 }
