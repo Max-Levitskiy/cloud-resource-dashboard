@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/transform"
 	"github.com/Rican7/retry"
 	"github.com/Rican7/retry/backoff"
 	"github.com/Rican7/retry/strategy"
@@ -102,7 +104,7 @@ func (e *elastic) BulkSave(resources []*model.Resource) {
 		if i == count-1 {
 			currBatch++
 		}
-		data := append(e.toJson(*resource), "\n"...)
+		data := append(transform.ToJson(*resource), "\n"...)
 
 		buf.Grow(len(meta) + len(data))
 		buf.Write(meta)
@@ -122,14 +124,6 @@ func (e *elastic) BulkSave(resources []*model.Resource) {
 	}
 	log.Println("Bulk save finished successfully")
 
-}
-
-func (e *elastic) toJson(resource model.Resource) []byte {
-	marshaled, err := json.Marshal(resource)
-	if err != nil {
-		log.Panic(err)
-	}
-	return marshaled
 }
 
 func (e *elastic) ClearResourceIndex() {
@@ -226,5 +220,25 @@ func (e *elastic) updateIndexMapping() {
 		log.Panic(err)
 	} else {
 		e.checkErrors(res)
+	}
+}
+
+func (e *elastic) CountResources() *count {
+	logger.Info.Print("Counting resources...")
+	countRequest := esapi.CountRequest{
+		Index: []string{conf.Inst.Elastic.Index.Resource.Name},
+	}
+	if res, err := countRequest.Do(context.Background(), e.es); err == nil {
+		e.checkErrors(res)
+		defer res.Body.Close()
+		var count count
+		if err := json.NewDecoder(res.Body).Decode(&count); err != nil {
+			logger.Error.Panic(err)
+		}
+		logger.Debug.Print(count)
+		return &count
+	} else {
+		logger.Error.Panic(err)
+		return nil
 	}
 }

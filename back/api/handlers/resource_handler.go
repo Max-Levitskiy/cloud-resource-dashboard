@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/handlers/common/response"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"net/http"
 )
 
 func ResourceHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(req.Method)
-
 	switch req.Method {
 	case http.MethodGet:
 		//if listS3, err := aws.ListS3("eu-central-1"); err == nil {
@@ -26,6 +24,16 @@ func ResourceHandler(w http.ResponseWriter, req *http.Request) {
 	case http.MethodOptions:
 		response.Ok(w)
 		break
+	default:
+		response.NotFound(w)
+	}
+}
+
+func ResourceCountHandler(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet:
+		response.WriteAsJson(w, elasticsearch.Client.CountResources())
+
 	default:
 		response.NotFound(w)
 	}
