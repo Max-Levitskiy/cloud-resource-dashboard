@@ -2,16 +2,18 @@ import {Injectable} from '@angular/core';
 import {ElasticsearchService} from './elasticsearch.service';
 import {environment} from '../../environments/environment';
 import {SearchParams, SearchResponse} from 'elasticsearch';
-import {Resource} from '../model/resource';
-import {MatSort, MatSortable} from '@angular/material/sort/sort';
+import {Resource, ResourceCount} from '../model/resource';
 import {QueryParams} from '../model/es/es-query';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResourceService {
 
-  constructor(private es: ElasticsearchService) { }
+  constructor(private es: ElasticsearchService,
+              private http: HttpClient
+  ) { }
 
   fetchResources(queryParams: QueryParams): Promise<SearchResponse<Resource>> {
     return this.es.getClient().then(client => {
@@ -37,8 +39,13 @@ export class ResourceService {
       }
       let search: Promise<SearchResponse<Resource>>;
       search = client.search(params);
-      search.then(value => console.log(value))
       return search;
     });
+  }
+
+  fetchResourceCount(): Promise<ResourceCount> {
+    return this.http
+      .get<ResourceCount>(`${environment.api.host}:${environment.api.port}/resource/count`)
+      .toPromise();
   }
 }

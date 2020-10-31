@@ -1,0 +1,4 @@
+<p>Resources total:
+  <span *ngIf="resourceCount$ | async as c; else loading">{{c.count}}</span>
+  <ng-template #loading><mat-spinner style="display: inline-block" diameter="18"></mat-spinner></ng-template>
+</p>

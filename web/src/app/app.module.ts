@@ -23,6 +23,7 @@ import {NgrxFormsModule} from 'ngrx-forms';
 import {metaReducers, reducers} from './reducers';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from '../environments/environment';
+import {ResourceCountComponent} from './components/resources/resource-count/resource-count.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {environment} from '../environments/environment';
     ListComponent,
     StatusComponent,
     ControlButtonsComponent,
-    SearchDrawerComponent
+    SearchDrawerComponent,
+    ResourceCountComponent
   ],
     imports: [
         BrowserModule,

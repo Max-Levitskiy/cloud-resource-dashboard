@@ -8,6 +8,7 @@
       <mat-label>Filter</mat-label>
       <input matInput [ngrxFormControlState]="(form$ | async).controls.query" placeholder="Filter"/>
     </mat-form-field>
+    <app-resource-count></app-resource-count>
     <table
       mat-table
       [dataSource]="resources$ | async"

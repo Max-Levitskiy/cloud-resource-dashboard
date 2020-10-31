@@ -7,3 +7,7 @@ export class Resource {
     CreationDate: Date;
     Tags: string[];
 }
+
+export class ResourceCount {
+  count: number;
+}
