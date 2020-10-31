@@ -3,6 +3,7 @@ package resources
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
 	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/types"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -12,7 +13,7 @@ import (
 )
 
 type S3Scanner struct {
-	GlobalResourceScanner
+	types.GlobalResourceScanner
 }
 
 var unknownRegion = "unknown"

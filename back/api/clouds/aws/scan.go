@@ -3,6 +3,7 @@ package aws
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/resources"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/types"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/aws/aws-sdk-go/aws/endpoints"
@@ -12,7 +13,7 @@ import (
 
 var awsRegions = getAwsRegions()
 
-var regionGlobalScanners = []resources.GlobalResourceScanner{
+var regionGlobalScanners = []types.GlobalResourceScanner{
 	resources.S3Scanner{},
 }
 
@@ -26,7 +27,7 @@ func FullScan() {
 	for _, profileName := range conf.Inst.AWS.ProfileNames {
 		accountId := getAccountId(profileName)
 		for _, scanner := range regionGlobalScanners {
-			go func(s resources.GlobalResourceScanner, accountId *string, profileName *string) {
+			go func(s types.GlobalResourceScanner, accountId *string, profileName *string) {
 				scannerType := reflect.TypeOf(s).String()
 				logger.Info.Printf("Starting %s Scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
 				s.Scan(accountId, profileName)

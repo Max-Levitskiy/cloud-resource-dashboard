@@ -1,4 +1,4 @@
-package resources
+package types
 
 type RegionalResourceScanner interface {
 	Scan(accountId *string, region string, profileName string)
