@@ -1,16 +1,17 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/sirupsen/logrus"
 )
 
-func scanVpc(accountId *string, region string) {
-	logrus.Infof("Start scan VPC for %s account %s region", *accountId, region)
-	list, err := ListVpc(region)
+func ScanVpc(accountId *string, region string) {
+	logrus.Infof("Start Scan VPC for %s account %s region", *accountId, region)
+	list, err := listVpc(region)
 	if err == nil {
 		if list.Vpcs != nil && len(list.Vpcs) > 0 {
 			resources := vpcToResources(list.Vpcs, accountId, &region)
@@ -22,8 +23,8 @@ func scanVpc(accountId *string, region string) {
 	logrus.Infof("Scan VPC for %s region finished", region)
 }
 
-func ListVpc(region string) (*ec2.DescribeVpcsOutput, error) {
-	session := getSession(region)
+func listVpc(region string) (*ec2.DescribeVpcsOutput, error) {
+	session := session2.Get(region)
 
 	svc := ec2.New(session)
 

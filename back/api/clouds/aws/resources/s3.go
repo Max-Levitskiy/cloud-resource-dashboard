@@ -1,7 +1,8 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -10,15 +11,15 @@ import (
 	"sync"
 )
 
-type s3Scanner struct {
-	globalResourceScanner
+type S3Scanner struct {
+	GlobalResourceScanner
 }
 
 var unknownRegion = "unknown"
 
-func (s3Scanner) scan(accountId *string, profileName *string) {
-	s := getSessionForDefaultRegion(profileName)
-	listS3, err := ListS3(s)
+func (S3Scanner) Scan(accountId *string, profileName *string) {
+	s := session2.GetForDefaultRegion(profileName)
+	listS3, err := listS3(s)
 	if err == nil {
 		resources := s3BucketsToResources(listS3.Buckets, accountId, s)
 		elasticsearch.Client.BulkSave(resources)
@@ -26,7 +27,7 @@ func (s3Scanner) scan(accountId *string, profileName *string) {
 	log.Printf("Scan S3 for profile %s finished", *profileName)
 }
 
-func ListS3(s *session.Session) (*s3.ListBucketsOutput, error) {
+func listS3(s *session.Session) (*s3.ListBucketsOutput, error) {
 	input := &s3.ListBucketsInput{}
 	svc := s3.New(s)
 

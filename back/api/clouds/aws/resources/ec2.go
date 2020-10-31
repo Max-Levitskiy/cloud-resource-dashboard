@@ -1,16 +1,17 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"log"
 )
 
-func scanEc2(accountId *string, region string) {
+func ScanEc2(accountId *string, region string) {
 	log.Printf("Start scan EC2 for %s account %s region", *accountId, region)
-	listS3, err := ListEC2(region)
+	listS3, err := listEC2(region)
 	if err == nil {
 		resources := ec2InstancesToResources(listS3.Reservations, accountId, &region)
 		elasticsearch.Client.BulkSave(resources)
@@ -18,9 +19,9 @@ func scanEc2(accountId *string, region string) {
 	log.Printf("Scan EC2 for %s region finished", region)
 }
 
-func ListEC2(region string) (*ec2.DescribeInstancesOutput, error) {
+func listEC2(region string) (*ec2.DescribeInstancesOutput, error) {
 	input := &ec2.DescribeInstancesInput{}
-	session := getSession(region)
+	session := session2.Get(region)
 
 	svc := ec2.New(session)
 
@@ -48,4 +49,12 @@ func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string,
 		}
 	}
 	return resources
+}
+
+func awsToResourceTags(tags []*ec2.Tag) map[string]string {
+	result := map[string]string{}
+	for _, tag := range tags {
+		result[*tag.Key] = *tag.Value
+	}
+	return result
 }

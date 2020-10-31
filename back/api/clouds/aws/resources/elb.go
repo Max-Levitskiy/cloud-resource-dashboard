@@ -1,16 +1,17 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/sirupsen/logrus"
 )
 
-func scanElb(accountId *string, region string) {
+func ScanElb(accountId *string, region string) {
 	logrus.Infof("Start scan EBS for %s account %s region", *accountId, region)
-	list, err := ListElb(region)
+	list, err := listElb(region)
 	if err == nil {
 		if list.LoadBalancers != nil && len(list.LoadBalancers) > 0 {
 			resources := elbToResources(list.LoadBalancers, accountId, &region, getElbTags(region, list.LoadBalancers))
@@ -22,8 +23,8 @@ func scanElb(accountId *string, region string) {
 	logrus.Infof("Scan EBS for %s region finished", region)
 }
 
-func ListElb(region string) (*elbv2.DescribeLoadBalancersOutput, error) {
-	session := getSession(region)
+func listElb(region string) (*elbv2.DescribeLoadBalancersOutput, error) {
+	session := session2.Get(region)
 
 	svc := elbv2.New(session)
 
@@ -69,7 +70,7 @@ func getElbTags(region string, elbs []*elbv2.LoadBalancer) *map[string]map[strin
 }
 
 func describeElbTags(region string, arns []*string, m *map[string]map[string]string) error {
-	svc := elbv2.New(getSession(region))
+	svc := elbv2.New(session2.Get(region))
 	input := &elbv2.DescribeTagsInput{
 		ResourceArns: arns,
 	}

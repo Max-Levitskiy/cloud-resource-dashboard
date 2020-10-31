@@ -1,4 +1,4 @@
-package aws
+package session
 
 import (
 	"fmt"
@@ -12,10 +12,12 @@ import (
 var activeSessionsCache sync.Map
 var noProfile = "[noprofile]"
 
-func getSessionForDefaultRegion(profile ...*string) *session.Session {
-	return getSession(defaultRegion, profile...)
+const DefaultRegion = "us-east-1"
+
+func GetForDefaultRegion(profile ...*string) *session.Session {
+	return Get(DefaultRegion, profile...)
 }
-func getSession(region string, profile ...*string) *session.Session {
+func Get(region string, profile ...*string) *session.Session {
 	if len(profile) > 1 {
 		log.Panic("You can use no more then 1 profile. Given: ", profile)
 	}

@@ -1,60 +1,51 @@
 package aws
 
 import (
-	"fmt"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/resources"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/conf"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/aws/aws-sdk-go/aws/endpoints"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"reflect"
 )
 
 var awsRegions = getAwsRegions()
 
-type regionalResourceScanner interface {
-	scan(accountId *string, region string, profileName string)
-}
-type globalResourceScanner interface {
-	scan(accountId *string, profileName *string)
-}
-
-const defaultRegion = "us-east-1"
-
-var regionGlobalScanners = []globalResourceScanner{
-	s3Scanner{},
+var regionGlobalScanners = []resources.GlobalResourceScanner{
+	resources.S3Scanner{},
 }
 
 func FullScan() {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			logger.Warn.Println("Recovered: ", r)
 		}
 	}()
-	logger.Info.Println("Start AWS scan")
+	logger.Info.Println("Start AWS Scan")
 	for _, profileName := range conf.Inst.AWS.ProfileNames {
 		accountId := getAccountId(profileName)
 		for _, scanner := range regionGlobalScanners {
-			go func(s globalResourceScanner, accountId *string, profileName *string) {
+			go func(s resources.GlobalResourceScanner, accountId *string, profileName *string) {
 				scannerType := reflect.TypeOf(s).String()
-				logger.Info.Printf("Starting %s scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
-				s.scan(accountId, profileName)
+				logger.Info.Printf("Starting %s Scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
+				s.Scan(accountId, profileName)
 				logger.Info.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *accountId)
 			}(scanner, accountId, profileName)
 		}
 		for _, region := range awsRegions {
 			//go scanS3(accountId, region, profileName)
-			go scanEc2(accountId, region)
-			go scanEBS(accountId, region)
-			go scanElb(accountId, region)
-			go scanLambdaFunctions(accountId, region)
-			go scanVpc(accountId, region)
+			go resources.ScanEc2(accountId, region)
+			go resources.ScanEBS(accountId, region)
+			go resources.ScanElb(accountId, region)
+			go resources.ScanLambdaFunctions(accountId, region)
+			go resources.ScanVpc(accountId, region)
 		}
 	}
 }
 
 func getAccountId(profileName *string) *string {
-	s := sts.New(getSession(defaultRegion, profileName))
+	s := sts.New(session.Get(session.DefaultRegion, profileName))
 	identity, err := s.GetCallerIdentity(&sts.GetCallerIdentityInput{})
 	if err == nil {
 		return identity.Account
@@ -75,12 +66,4 @@ func getAwsRegions() []string {
 		}
 	}
 	return regions
-}
-
-func awsToResourceTags(tags []*ec2.Tag) map[string]string {
-	result := map[string]string{}
-	for _, tag := range tags {
-		result[*tag.Key] = *tag.Value
-	}
-	return result
 }

@@ -1,27 +1,27 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/sirupsen/logrus"
 )
 
-func scanLambdaFunctions(accountId *string, region string) {
+func ScanLambdaFunctions(accountId *string, region string) {
 	logrus.Infof("Start scan LambdaFunctions for %s account %s region", *accountId, region)
-	lambdaList, err := ListEBS(region)
+	lambdaList, err := listLambdaFunctions(region)
 	if err == nil {
-		resources := LambdaInstancesToResources(lambdaList.Volumes, accountId, &region)
+		resources := LambdaInstancesToResources(lambdaList.Functions, accountId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	logrus.Infof("Scan LambdaFunctions for %s region finished", region)
 }
 
-func ListLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
+func listLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
 	input := &lambda.ListFunctionsInput{}
-	session := getSession(region)
+	session := session2.Get(region)
 
 	svc := lambda.New(session)
 
@@ -33,18 +33,16 @@ func ListLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
 	}
 }
 
-func LambdaInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []*model.Resource {
-	var resources = make([]*model.Resource, len(volumes))
-	for i, volume := range volumes {
+func LambdaInstancesToResources(lambdas []*lambda.FunctionConfiguration, accountId *string, region *string) []*model.Resource {
+	var resources = make([]*model.Resource, len(lambdas))
+	for i, lambda := range lambdas {
 
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "lambda",
 			AccountId:     accountId,
 			Region:        region,
-			ResourceId:    volume.VolumeId,
-			CreationDate:  volume.CreateTime,
-			Tags:          awsToResourceTags(volume.Tags),
+			ResourceId:    lambda.FunctionArn,
 		}
 	}
 	return resources

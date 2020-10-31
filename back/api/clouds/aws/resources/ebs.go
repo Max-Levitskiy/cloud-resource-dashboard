@@ -1,16 +1,17 @@
-package aws
+package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
+	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"log"
 )
 
-func scanEBS(accountId *string, region string) {
+func ScanEBS(accountId *string, region string) {
 	log.Printf("Start scan EBS for %s account %s region", *accountId, region)
-	ebsList, err := ListEBS(region)
+	ebsList, err := listEBS(region)
 	if err == nil {
 		resources := ebsInstancesToResources(ebsList.Volumes, accountId, &region)
 		elasticsearch.Client.BulkSave(resources)
@@ -18,9 +19,9 @@ func scanEBS(accountId *string, region string) {
 	log.Printf("Scan EBS for %s region finished", region)
 }
 
-func ListEBS(region string) (*ec2.DescribeVolumesOutput, error) {
+func listEBS(region string) (*ec2.DescribeVolumesOutput, error) {
 	input := &ec2.DescribeVolumesInput{}
-	session := getSession(region)
+	session := session2.Get(region)
 
 	svc := ec2.New(session)
 
