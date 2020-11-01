@@ -17,5 +17,9 @@ type Resource struct {
 }
 
 func (r *Resource) GenerateId() string {
-	return strings.Join([]string{r.CloudProvider, r.Service, *r.Region, *r.AccountId, *r.ResourceId}, ":")
+	if r.CloudId == "" {
+		return strings.Join([]string{r.CloudProvider, r.Service, *r.Region, *r.AccountId, *r.ResourceId}, ":")
+	} else {
+		return r.CloudId
+	}
 }

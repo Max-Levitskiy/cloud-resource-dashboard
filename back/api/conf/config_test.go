@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"fmt"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/reflection"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -17,12 +18,28 @@ func TestConfig(t *testing.T) {
 		shouldOverrideConfigFromEnv,
 		shouldOverrideFilesByEnv,
 		shouldReadAwsProfiles,
+		shouldReadHomeDir,
+		shouldReadHomeDirFromEnv,
 	}
 
 	for _, test := range tests {
 		t.Run(reflection.GetFunctionName(test), test)
 		Reset()
 	}
+}
+
+func shouldReadHomeDir(t *testing.T) {
+	homeDir, err := os.UserHomeDir()
+	assert.Nil(t, err)
+
+	assert.Equal(t, homeDir, Inst.HomeDir)
+}
+
+func shouldReadHomeDirFromEnv(t *testing.T) {
+	homeDir := "/some/home/dir"
+	setEnv(t, "HOME_DIR", homeDir)
+	Reset()
+	assert.Equal(t, homeDir, Inst.HomeDir)
 }
 
 func shouldInitFieldsByDefault(t *testing.T) {
@@ -73,16 +90,18 @@ func shouldReadAwsProfiles(t *testing.T) {
 	credentialsFilePath := currentDir + "/credentials"
 	setEnv(t, "AWS_CONFIG_PATH", currentDir)
 	defer os.Remove(credentialsFilePath)
+	p1 := "profile1"
+	p2 := "profile2"
 	assert.Nil(t, ioutil.WriteFile(
 		credentialsFilePath,
-		[]byte("[profile1]\nsomecontent\n[profile2]\nmorecontent"),
+		[]byte(fmt.Sprintf("[%s]\nsomecontent\n[%s]\nmorecontent", p1, p2)),
 		os.ModePerm,
 	))
 
 	Reset()
 
 	assert.Len(t, Inst.AWS.ProfileNames, 2)
-	assert.Contains(t, Inst.AWS.ProfileNames, "profile1", "profile2")
+	assert.Contains(t, Inst.AWS.ProfileNames, &p1, &p2)
 }
 
 func setEnv(t *testing.T, key string, value string) {

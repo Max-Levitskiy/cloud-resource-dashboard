@@ -6,12 +6,15 @@ You need to have configured Kubernetes cluster
 
 # Running the application
 
-## Adding secrets
+## Adding AWS secrets
 You need to have aws-credentials secret in the k8s to mount in the API pod.
 There is a helper script for it: charts/scripts/aws-credentials-to-k8s.sh 
 This script will create aws-credentials secret from your ~/.aws/config and ~/.aws/credentials.
 
 __IMPORTANT: Please check you connected to correct k8s cluster to avoid a leak of your credentials.__
+
+## Adding GCP secrets
+Add service account in your [GCP console]()
 
 ## From gradle
 ```shell script
