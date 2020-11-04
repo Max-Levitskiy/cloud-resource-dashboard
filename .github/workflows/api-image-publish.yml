@@ -31,12 +31,12 @@ jobs:
         working-directory: $WORK_DIR
         run: |
           ls
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
+        #if [ -f docker-compose.test.yml ]; then
+        #  docker-compose --file docker-compose.test.yml build
+        #  docker-compose --file docker-compose.test.yml run sut
+        #else
+        #  docker build . --file Dockerfile
+        #fi
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
