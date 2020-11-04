@@ -20,12 +20,28 @@ func TestConfig(t *testing.T) {
 		shouldReadAwsProfiles,
 		shouldReadHomeDir,
 		shouldReadHomeDirFromEnv,
+		shouldUseConfPathVariable,
 	}
 
 	for _, test := range tests {
 		t.Run(reflection.GetFunctionName(test), test)
 		Reset()
 	}
+}
+
+func shouldUseConfPathVariable(t *testing.T) {
+	defer unsetEnv(t, "CONFIG_PATH")
+	setEnv(t, "CONFIG_PATH", "/tmp/")
+	defer os.Remove("/tmp/config.yaml")
+	err := ioutil.WriteFile("/tmp/config.yaml", []byte(`
+elastic:
+  server: "tstServ"
+`), os.ModePerm)
+	assert.Nil(t, err)
+
+	Reset()
+
+	assert.Equal(t, Inst.Elastic.Server, "tstServ")
 }
 
 func shouldReadHomeDir(t *testing.T) {
@@ -70,6 +86,7 @@ func shouldResetConfig(t *testing.T) {
 
 func shouldOverrideConfigFromEnv(t *testing.T) {
 	serverName := "someServer"
+	defer unsetEnv(t, "ELASTIC_SERVER")
 	setEnv(t, "ELASTIC_SERVER", serverName)
 	Reset()
 

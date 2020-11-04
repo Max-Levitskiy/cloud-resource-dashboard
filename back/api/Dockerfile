@@ -8,5 +8,6 @@ FROM alpine
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /build/api .
-COPY --from=builder /build/conf ./conf
+COPY --from=builder /build/conf/*.yaml ./conf/
+ENV CONFIG_PATH=/root/conf
 CMD ["./api"]
