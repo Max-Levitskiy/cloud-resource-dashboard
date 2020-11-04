@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run tests
-        #working-directory: $WORK_DIR
+        working-directory: $WORK_DIR
         run: docker build . --file $WORK_DIR/Dockerfile
         #if [ -f docker-compose.test.yml ]; then
         #  docker-compose --file docker-compose.test.yml build
