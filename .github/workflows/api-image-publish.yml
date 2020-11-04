@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./back/api
-        run: docker build . --file Dockerfile
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
         #if [ -f docker-compose.test.yml ]; then
         #  docker-compose --file docker-compose.test.yml build
         #  docker-compose --file docker-compose.test.yml run sut
@@ -48,9 +48,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        working-directory: ./back/api
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+#       - name: Build image
+#         working-directory: ./back/api
+#         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
