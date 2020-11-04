@@ -16,7 +16,7 @@ on:
 
 env:
   IMAGE_NAME: cloudresourcedashboard/api
-  WORK_DIR: ./back/api
+  WORK_DIR: back/api
 
 jobs:
   # Run tests.
