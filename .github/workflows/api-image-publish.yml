@@ -1,4 +1,4 @@
-name: Docker
+name: Api docker image
 
 on:
   push:
