@@ -1,3 +1,5 @@
+![Api docker image](https://github.com/Max-Levitskiy/cloud-resource-dashboard/workflows/Api%20docker%20image/badge.svg)
+
 # cloud-resource-dashboard
 Collect information about your cloud infrastructure in one place
 
