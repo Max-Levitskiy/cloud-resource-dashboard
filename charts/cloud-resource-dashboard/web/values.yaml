@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: cloudresourcedashboard/web
+  repository: ghcr.io/max-levitskiy/cloudresourcedashboard/web
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
