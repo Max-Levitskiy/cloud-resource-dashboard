@@ -29,7 +29,7 @@ jobs:
 
       - name: Run tests
         working-directory: $WORK_DIR
-        run: docker build . --file $WORK_DIR/Dockerfile
+        run: docker build . --file Dockerfile
         #if [ -f docker-compose.test.yml ]; then
         #  docker-compose --file docker-compose.test.yml build
         #  docker-compose --file docker-compose.test.yml run sut
