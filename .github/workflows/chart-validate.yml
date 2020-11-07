@@ -9,7 +9,7 @@ defaults:
 # events but only for the master branch
 on:
   push:
-    branches: [ master, chart-validate ]
+    branches: [ master ]
     paths: 
       - ./charts/cloud-resource-dashboard
       - .github/workflows/chart-validate.yml
