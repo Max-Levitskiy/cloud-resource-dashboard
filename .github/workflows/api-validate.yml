@@ -28,5 +28,11 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-
+    
+    - id: k3s
+      uses: manics/action-k3s-helm@main
+    
+    - name: Install elasticsearch chart  
+      run: helm install elasticsearch . --set web.enabled=false,api.enabled=false --wait --timeout 2m
+    
     - run: go test -v ./...
