@@ -19,6 +19,10 @@ spec:
           secret:
             secretName: "aws-credentials"
             optional: true
+        - name: gcp-credentials
+          secret:
+            secretName: "gcp-credentials"
+            optional: true
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -38,6 +42,8 @@ spec:
           volumeMounts:
             - mountPath: /root/.aws
               name: aws-credentials
+            - mountPath: /root/.gcp/credentials
+              name: gcp-credentials
           ports:
             - name: http
               containerPort: 8080
