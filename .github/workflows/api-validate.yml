@@ -1,5 +1,9 @@
 name: Go
 
+defaults:
+  run:
+    working-directory: ./back/api
+
 on:
   push:
     paths:
