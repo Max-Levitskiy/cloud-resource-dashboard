@@ -36,6 +36,8 @@ jobs:
 
     - name: Runs Elasticsearch
       uses: elastic/elastic-github-actions/elasticsearch@master
+      with:
+        stack-version: 7.9.3
     
     - run: go test -v ./...
       working-directory: ./back/api
