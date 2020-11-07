@@ -16,7 +16,30 @@ This script will create aws-credentials secret from your ~/.aws/config and ~/.aw
 __IMPORTANT: Please check you connected to correct k8s cluster to avoid a leak of your credentials.__
 
 ## Adding GCP secrets
-Add service account in your [GCP console]()
+### Service accounts creation
+Add service account in your [GCP console](https://console.cloud.google.com/iam-admin/serviceaccounts). For scan all resources you should select Project -> Viewer role. If you don't need all resources, just select required services and use viewer option. 
+
+For scanning multiple projects you have two options:
+- Create service account in every project
+- Create service account in one project and add this role as an [IAM](https://console.cloud.google.com/iam-admin/iam) for other required projects.
+
+### Service account keys to secret
+
+#### Create service accounts 
+
+After you have required service account(s) you need to create keys and create secret from them. On the [service account page](https://console.cloud.google.com/iam-admin/serviceaccounts) use Create Action -> Create key option, select json format and save the file in the ~/.gcp/credentials 
+If you're using multiple service account save all keys in ~/.gcp/credentials. Names of the files is not important. 
+
+#### Create secret in k8s
+
+Use charts/scripts/gcp-credentials-to-k8s.sh script for create gcp-credentials secret.
+ 
+ Alternatively, you can create secret manually with k8s command:
+ ```shell script
+GCPCREDENTIALS=$HOME/.gcp/credentials
+FILENAME=fileWithKey.json
+kubectl create secret generic gcp-credentials --from-file=$FILENAME=$GCPCREDENTIALS/$FILENAME
+```
 
 ## From gradle
 ```shell script
