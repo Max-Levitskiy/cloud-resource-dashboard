@@ -15,8 +15,6 @@ jobs:
   test:
     name: Test api
     runs-on: ubuntu-latest
-    env:
-      ELASTIC_PORT: 9200
     steps:
 
     - name: Set up Go 1.x
@@ -38,6 +36,7 @@ jobs:
       uses: elastic/elastic-github-actions/elasticsearch@master
       with:
         stack-version: 7.9.3
+        port: 30920
     
     - run: go test -v ./...
       working-directory: ./back/api
