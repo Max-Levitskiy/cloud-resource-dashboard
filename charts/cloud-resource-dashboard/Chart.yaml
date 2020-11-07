@@ -26,9 +26,11 @@ dependencies:
   - name: api
     repository: "file://api"
     version: 0.1.0
+    condition: api.enabled
   - name: web
     repository: "file://web"
     version: 0.1.0
+    condition: web.enabled
   - name: elasticsearch
     repository: https://helm.elastic.co
     version: 7.9.3
