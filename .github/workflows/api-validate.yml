@@ -33,6 +33,8 @@ jobs:
       uses: manics/action-k3s-helm@main
     
     - name: Install elasticsearch chart  
-      run: helm install elasticsearch . --set web.enabled=false,api.enabled=false --wait --timeout 2m
+      run: |
+        helm dependency update
+        helm install elasticsearch . --set web.enabled=false,api.enabled=false --wait --timeout 2m
     
     - run: go test -v ./...
