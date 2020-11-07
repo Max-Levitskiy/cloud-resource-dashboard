@@ -20,6 +20,8 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   test:
+    env: 
+      chart_name: cloud-resource-dashboard
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -40,7 +42,7 @@ jobs:
       - name: Install chart
         run: |
           helm dependency update
-          helm install cloud-resource-dashboard . --set elasticsearch.enabled=false --wait --timeout 30s
+          helm install ${{env.chart_name}} . --set elasticsearch.enabled=false --wait --timeout 30s
       
       - name: Helm test
-        run: helm test
+        run: helm test ${{env.chart_name}}
