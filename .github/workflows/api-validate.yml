@@ -1,9 +1,5 @@
 name: Test api
 
-defaults:
-  run:
-    working-directory: ./back/api
-
 on:
   push:
     paths:
@@ -32,9 +28,11 @@ jobs:
     - id: k3s
       uses: manics/action-k3s-helm@main
     
-    - name: Install elasticsearch chart  
+    - name: Install elasticsearch chart
+      working-directory: ./charts/cloud-resource-dashboard
       run: |
         helm dependency update
         helm install elasticsearch . --set web.enabled=false,api.enabled=false --wait --timeout 2m
     
     - run: go test -v ./...
+      working-directory: ./back/api
