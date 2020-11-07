@@ -1,0 +1,12 @@
+dependencies:
+- name: api
+  repository: file://api
+  version: 0.1.0
+- name: web
+  repository: file://web
+  version: 0.1.0
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 7.9.3
+digest: sha256:00e5b03c018734d33816827c8f73479a95f68090d4b78bdf3662ec88ef711e66
+generated: "2020-11-07T09:32:34.2460007+01:00"

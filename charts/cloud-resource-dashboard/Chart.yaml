@@ -23,9 +23,13 @@ version: 0.1.0
 appVersion: 1.16.0
 
 dependencies:
-  - name: crd-api
+  - name: api
     repository: "file://api"
     version: 0.1.0
-  - name: crd-web
+  - name: web
     repository: "file://web"
     version: 0.1.0
+  - name: elasticsearch
+    repository: https://helm.elastic.co
+    version: 7.9.3
+    condition: elasticsearch.enabled

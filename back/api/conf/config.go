@@ -58,7 +58,7 @@ func readAwsProfiles(cfg *config) {
 	var configPath string
 	if configPath = os.Getenv("AWS_CONFIG_PATH"); configPath == "" {
 		if homeDir, err := homedir.Dir(); err != nil {
-			logrus.Error(err)
+			logger.Warn.Println(err)
 		} else {
 			configPath = homeDir + "/.aws"
 		}
@@ -74,7 +74,7 @@ func readAwsProfiles(cfg *config) {
 			}
 		}
 	} else {
-		logrus.Error(err)
+		logger.Warn.Println(err)
 	}
 }
 
@@ -101,7 +101,7 @@ func readFile(cfg *config, filePostfix string) {
 		fileName = fmt.Sprintf("config_%s.yaml", filePostfix)
 	}
 
-	f, err := os.Open(getCurrentDir() + "/" + fileName)
+	f, err := os.Open(getConfigDir() + "/" + fileName)
 	if err != nil {
 		processError(err)
 	}
@@ -125,11 +125,15 @@ func processError(err error) {
 	logrus.Fatal("Can't read config. Exit.")
 }
 
-func getCurrentDir() string {
-	if _, filename, _, ok := runtime.Caller(0); ok {
-		return path.Dir(filename)
+func getConfigDir() string {
+	if p := os.Getenv("CONFIG_PATH"); len(p) > 0 {
+		return p
 	} else {
-		logger.Error.Panic("No caller information")
-		return ""
+		if _, filename, _, ok := runtime.Caller(0); ok {
+			return path.Dir(filename)
+		} else {
+			logger.Error.Panic("No caller information")
+			return ""
+		}
 	}
 }
