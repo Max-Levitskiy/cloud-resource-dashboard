@@ -22,6 +22,9 @@ helm {
     releases {
         create("cloud-resource-dashboard") {
             from(cloudResourceDashboardChart)
+            values.put("web.enabled", project.property("chart.web.enabled").toString().toBoolean())
+            values.put("api.enabled", project.findProperty("chart.api.enabled").toString().toBoolean())
+            values.put("elasticsearch.enabled", project.findProperty("chart.elasticsearch.enabled").toString().toBoolean())
         }
     }
 
@@ -42,7 +45,7 @@ helm {
 val installElasticsearchChart by tasks.creating(HelmInstall::class) {
     chart.value("elastic/elasticsearch")
     releaseName.value("elasticsearch")
-    valueFiles.from("charts/es/values.yaml")
+    valueFiles.from("charts/es/es-values.yaml")
 }
 
 val uninstallElasticsearchChart by tasks.creating(HelmUninstall::class) {
