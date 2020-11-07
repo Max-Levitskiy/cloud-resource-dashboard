@@ -15,6 +15,9 @@ on:
 
   # Run tests for any PRs.
   pull_request:
+    paths:
+      - ./back/api
+      - .github/workflows/web-image-publish.yml
 
 env:
   IMAGE_NAME: cloudresourcedashboard/web

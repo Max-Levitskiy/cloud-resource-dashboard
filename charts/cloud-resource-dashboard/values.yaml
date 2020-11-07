@@ -12,7 +12,8 @@ elasticsearch:
   enabled: true
 
   masterService: elasticsearch
-  persistence.enabled: false
+  persistence:
+    enabled: false
   replicas: 1
   antiAffinity: "soft"
   clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
