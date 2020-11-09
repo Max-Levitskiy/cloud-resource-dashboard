@@ -15,6 +15,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -177,11 +178,11 @@ func (e *elastic) CreateIndex() {
 	req := esapi.IndicesCreateRequest{
 		Index: conf.Inst.Elastic.Index.Resource.Name,
 	}
-	if res, err := req.Do(context.Background(), e.es); err != nil {
-		log.Panic(err)
-	} else {
+	if res, err := req.Do(context.Background(), e.es); err == nil {
 		e.checkErrors(res)
 		e.updateIndexMapping()
+	} else {
+		log.Panic(err)
 	}
 }
 
@@ -235,10 +236,59 @@ func (e *elastic) CountResources() *count {
 		if err := json.NewDecoder(res.Body).Decode(&count); err != nil {
 			logger.Error.Panic(err)
 		}
-		logger.Debug.Print(count)
+		logger.Info.Print(count)
 		return &count
 	} else {
 		logger.Error.Panic(err)
+		return nil
+	}
+}
+
+func (e *elastic) ResourceDistinctServices() []string {
+
+	body := strings.NewReader(`
+{
+  "aggs": {
+    "services": {
+      "terms": {
+        "field": "Service"
+      }
+    }
+  },
+  "size": 0
+}
+`)
+	request := esapi.SearchRequest{
+		Body: body,
+	}
+	if response, err := request.Do(context.Background(), e.es); err == nil {
+		e.checkErrors(response)
+
+		//var result map[string]interface{}
+		var result struct {
+			Took         int
+			Aggregations struct {
+				Services struct {
+					Buckets []struct {
+						Key string
+					}
+				}
+			}
+		}
+
+		if err := json.NewDecoder(response.Body).Decode(&result); err == nil {
+			var services []string
+			for _, bucket := range result.Aggregations.Services.Buckets {
+				services = append(services, bucket.Key)
+			}
+			return services
+		} else {
+			logger.Error.Panic(err)
+			return nil
+		}
+
+	} else {
+		logger.Warn.Println(err)
 		return nil
 	}
 }

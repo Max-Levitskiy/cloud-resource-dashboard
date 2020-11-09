@@ -14,6 +14,6 @@ export class ResourceCountComponent implements OnInit {
   resourceCount$;
 
   ngOnInit(): void {
-    this.resourceCount$ = this.resourceService.fetchResourceCount();
+    this.resourceCount$ = this.resourceService.fetchCount();
   }
 }

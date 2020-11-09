@@ -38,3 +38,12 @@ func ResourceCountHandler(w http.ResponseWriter, req *http.Request) {
 		response.NotFound(w)
 	}
 }
+
+func ResourceDistinctServiceHandler(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet:
+		response.WriteAsJson(w, elasticsearch.Client.ResourceDistinctServices())
+	default:
+		response.NotFound(w)
+	}
+}

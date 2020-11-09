@@ -6,7 +6,7 @@
   <form (submit)="$event.preventDefault()" [ngrxFormState]="form$ | async">
     <mat-form-field>
       <mat-label>Filter</mat-label>
-      <input matInput [ngrxFormControlState]="(form$ | async).controls.query" placeholder="Filter"/>
+      <input matInput [ngrxFormControlState]="(form$ | async).controls.query" name="filter" autocomplete="off" placeholder="Filter"/>
     </mat-form-field>
     <app-resource-count></app-resource-count>
     <table
