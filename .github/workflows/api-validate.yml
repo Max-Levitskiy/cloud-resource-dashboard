@@ -3,7 +3,7 @@ name: Test api
 on:
   push:
     paths:
-      - ./backend/auth-api
+      - ./back/auth-api
       - .github/workflows/backend-api-validate.yml
   pull_request:
     paths:
