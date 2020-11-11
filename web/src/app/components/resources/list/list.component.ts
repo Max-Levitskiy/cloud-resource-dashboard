@@ -60,9 +60,12 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
             size: this.paginator.pageSize,
             from: this.paginator.pageIndex * this.paginator.pageSize,
           };
+          queryParams.terms = new Map<string, string>();
           if (this.controls.service.value) {
-            queryParams.terms = new Map<string, string>();
             queryParams.terms.set('Service', this.controls.service.value);
+          }
+          if (this.controls.region.value) {
+            queryParams.terms.set('Region', this.controls.region.value);
           }
           if (this.sort.active && this.sort.direction) {
             const sortParam: SortParam = {};

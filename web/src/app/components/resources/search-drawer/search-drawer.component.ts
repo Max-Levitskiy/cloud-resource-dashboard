@@ -5,8 +5,6 @@ import {Store} from '@ngrx/store';
 import {State} from '../../../reducers';
 import {SearchParams} from '../../../forms/search-drawer-form';
 import {ResourceService} from '../../../services/resource.service';
-import {MatChipInputEvent} from '@angular/material/chips';
-import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-search-drawer',
@@ -17,7 +15,8 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 export class SearchDrawerComponent implements OnInit {
 
   form$: Observable<FormGroupState<SearchParams>>;
-  distinctResourceService$: Promise<string[]>;
+  distinctServices$: Promise<string[]>;
+  distinctRegions$: Promise<string[]>;
 
   constructor(private store: Store<State>,
               private resourceService: ResourceService
@@ -26,6 +25,7 @@ export class SearchDrawerComponent implements OnInit {
 
   ngOnInit(): void {
     this.form$ = this.store.select('searchForm');
-    this.distinctResourceService$ = this.resourceService.fetchDistinctService();
+    this.distinctServices$ = this.resourceService.fetchDistinctField('service');
+    this.distinctRegions$ = this.resourceService.fetchDistinctField('region');
   }
 }

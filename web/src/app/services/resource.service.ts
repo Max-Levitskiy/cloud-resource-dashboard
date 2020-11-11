@@ -26,13 +26,16 @@ export class ResourceService {
       params.body = {
         sort: queryParams.sort
       };
-
-      if (queryParams.terms) {
-        params.body.query = {term: {}};
+      if (queryParams.terms.size > 0) {
+        params.body.query = {bool: {must: [] }};
         queryParams
           .terms
-          .forEach((value, key) =>
-            params.body.query.term[key] = {value});
+          .forEach((value, key) => {
+            const term: any = {};
+            term[key] = value;
+            params.body.query.bool.must.push({term});
+          });
+
       }
 
       if (queryParams.query) {
@@ -50,9 +53,9 @@ export class ResourceService {
       .toPromise();
   }
 
-  fetchDistinctService(): Promise<string[]> {
+  fetchDistinctField(fieldName: string): Promise<string[]> {
     return this.http
-      .get<string[]>(this.getApiUrlFor('/resource/distinct/service'))
+      .get<string[]>(this.getApiUrlFor('/resource/distinct/' + fieldName))
       .toPromise();
   }
 

@@ -1,14 +1,17 @@
 import {createFormGroupState, FormGroupState, onNgrxForms} from 'ngrx-forms';
 import {ActionReducer, createReducer} from '@ngrx/store';
+import {FormControlState} from 'ngrx-forms/src/state';
 
 export interface SearchParams {
   service;
+  region;
   query;
 }
 
 const formInitState: SearchParams = {
-  service: '',
-  query: ''
+  service: null,
+  region: null,
+  query: null
 };
 
 const SEARCH_DRAWER_FORM_ID = 'search-drawer-form';
