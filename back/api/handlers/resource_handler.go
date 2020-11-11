@@ -3,7 +3,9 @@ package handlers
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/handlers/common/response"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func ResourceHandler(w http.ResponseWriter, req *http.Request) {
@@ -29,21 +31,11 @@ func ResourceHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func ResourceCountHandler(w http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodGet:
-		response.WriteAsJson(w, elasticsearch.Client.CountResources())
-
-	default:
-		response.NotFound(w)
-	}
+func ResourceCountHandler(c *gin.Context) {
+	c.JSON(200, elasticsearch.Client.CountResources())
 }
 
-func ResourceDistinctServiceHandler(w http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodGet:
-		response.WriteAsJson(w, elasticsearch.Client.ResourceDistinctServices())
-	default:
-		response.NotFound(w)
-	}
+func ResourceDistinctServiceHandler(c *gin.Context) {
+	field := strings.Title(c.Param("field"))
+	c.JSON(200, elasticsearch.Client.DistinctResourceField(field))
 }

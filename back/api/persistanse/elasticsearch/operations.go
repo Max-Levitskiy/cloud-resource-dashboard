@@ -244,20 +244,20 @@ func (e *elastic) CountResources() *count {
 	}
 }
 
-func (e *elastic) ResourceDistinctServices() []string {
+func (e *elastic) DistinctResourceField(fieldName string) []string {
 
-	body := strings.NewReader(`
+	body := strings.NewReader(fmt.Sprintf(`
 {
   "aggs": {
     "services": {
       "terms": {
-        "field": "Service"
+        "field": "%s"
       }
     }
   },
   "size": 0
 }
-`)
+`, fieldName))
 	request := esapi.SearchRequest{
 		Body: body,
 	}

@@ -92,7 +92,7 @@ func TestUpdateIndexMapping(t *testing.T) {
 	assert.Equal(t, "keyword", body["resources"]["mappings"]["properties"]["ResourceId"]["type"])
 }
 
-func TestElastic_ResourceDistinctService(t *testing.T) {
+func TestElastic_DistinctResourceField(t *testing.T) {
 	defer Client.ClearResourceIndex()
 
 	// given
@@ -109,7 +109,7 @@ func TestElastic_ResourceDistinctService(t *testing.T) {
 	Client.SaveResource(resource)
 
 	// when
-	services := Client.ResourceDistinctServices()
+	services := Client.DistinctResourceField("Service")
 
 	// then
 	assert.Len(t, services, 2)
