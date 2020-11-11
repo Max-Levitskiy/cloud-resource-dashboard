@@ -24,6 +24,8 @@ import {metaReducers, reducers} from './reducers';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from '../environments/environment';
 import {ResourceCountComponent} from './components/resources/resource-count/resource-count.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -34,11 +36,11 @@ import {ResourceCountComponent} from './components/resources/resource-count/reso
     SearchDrawerComponent,
     ResourceCountComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
 
     MatTableModule,
     MatPaginatorModule,
@@ -52,9 +54,11 @@ import {ResourceCountComponent} from './components/resources/resource-count/reso
     NgrxFormsModule,
 
     // ngrx
-    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreModule.forRoot(reducers, {metaReducers}),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
+    MatAutocompleteModule,
+    MatChipsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

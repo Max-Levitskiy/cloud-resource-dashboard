@@ -92,6 +92,31 @@ func TestUpdateIndexMapping(t *testing.T) {
 	assert.Equal(t, "keyword", body["resources"]["mappings"]["properties"]["ResourceId"]["type"])
 }
 
+func TestElastic_ResourceDistinctService(t *testing.T) {
+	defer Client.ClearResourceIndex()
+
+	// given
+	Client.CreateIndex()
+	resource := getResourceExample()
+	resource.CloudId = "id1"
+	resource.Service = "service1"
+	Client.SaveResource(resource)
+	resource.CloudId = "id2"
+	resource.Service = "service1"
+	Client.SaveResource(resource)
+	resource.CloudId = "id3"
+	resource.Service = "service2"
+	Client.SaveResource(resource)
+
+	// when
+	services := Client.ResourceDistinctServices()
+
+	// then
+	assert.Len(t, services, 2)
+	assert.Contains(t, services, "service1")
+	assert.Contains(t, services, "service2")
+}
+
 func getResourceExample() model.Resource {
 	accountId := "someAccId"
 	name := uuid.New().String()

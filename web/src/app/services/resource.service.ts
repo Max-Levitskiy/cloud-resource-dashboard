@@ -13,7 +13,8 @@ export class ResourceService {
 
   constructor(private es: ElasticsearchService,
               private http: HttpClient
-  ) { }
+  ) {
+  }
 
   fetchResources(queryParams: QueryParams): Promise<SearchResponse<Resource>> {
     return this.es.getClient().then(client => {
@@ -43,9 +44,20 @@ export class ResourceService {
     });
   }
 
-  fetchResourceCount(): Promise<ResourceCount> {
+  fetchCount(): Promise<ResourceCount> {
     return this.http
-      .get<ResourceCount>(`${environment.api.host}:${environment.api.port}/resource/count`)
+      .get<ResourceCount>(this.getApiUrlFor('/resource/count'))
       .toPromise();
   }
+
+  fetchDistinctService(): Promise<string[]> {
+    return this.http
+      .get<string[]>(this.getApiUrlFor('/resource/distinct/service'))
+      .toPromise();
+  }
+
+  private getApiUrlFor(path: string) {
+    return `${environment.api.host}:${environment.api.port}${path}`;
+  }
 }
+

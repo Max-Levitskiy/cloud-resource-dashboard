@@ -1,8 +1,17 @@
 <mat-drawer-container class="example-container" autosize>
   <mat-drawer #advancedSearch mode="side">
-    <mat-form-field>
-      <mat-label>Service</mat-label>
-      <input matInput placeholder="Service" [ngrxFormControlState]="(form$ | async).controls.service"/>
+    <mat-form-field class="example-full-width">
+      <input type="text"
+             placeholder="Service"
+             aria-label="Number"
+             matInput
+             [ngrxFormControlState]="(form$ | async).controls.service"
+             [matAutocomplete]="auto">
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option *ngFor="let option of distinctResourceService$ | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
   </mat-drawer>
   <button mat-button (click)="advancedSearch.toggle()">Show advancedSearch</button>
