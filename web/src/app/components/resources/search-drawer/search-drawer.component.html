@@ -3,6 +3,20 @@
     <p>
       <mat-form-field appearance="outline">
         <input type="text"
+               placeholder="Cloud provider"
+               matInput
+               [ngrxFormControlState]="(form$ | async).controls.cloudProvider"
+               [matAutocomplete]="cloudProviders">
+        <mat-autocomplete autoActiveFirstOption #cloudProviders="matAutocomplete">
+          <mat-option *ngFor="let option of distinctCloudProviders$ | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appearance="outline">
+        <input type="text"
                placeholder="Service"
                matInput
                [ngrxFormControlState]="(form$ | async).controls.service"

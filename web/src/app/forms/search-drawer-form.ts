@@ -3,6 +3,7 @@ import {ActionReducer, createReducer} from '@ngrx/store';
 import {FormControlState} from 'ngrx-forms/src/state';
 
 export interface SearchParams {
+  cloudProvider;
   service;
   region;
   projectId;
@@ -10,6 +11,7 @@ export interface SearchParams {
 }
 
 const formInitState: SearchParams = {
+  cloudProvider: null,
   service: null,
   region: null,
   projectId: null,

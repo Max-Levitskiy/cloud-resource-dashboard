@@ -61,6 +61,9 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
             from: this.paginator.pageIndex * this.paginator.pageSize,
           };
           queryParams.terms = new Map<string, string>();
+          if (this.controls.cloudProvider.value) {
+            queryParams.terms.set('CloudProvider', this.controls.cloudProvider.value);
+          }
           if (this.controls.service.value) {
             queryParams.terms.set('Service', this.controls.service.value);
           }

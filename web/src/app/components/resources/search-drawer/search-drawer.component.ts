@@ -15,6 +15,7 @@ import {ResourceService} from '../../../services/resource.service';
 export class SearchDrawerComponent implements OnInit {
 
   form$: Observable<FormGroupState<SearchParams>>;
+  distinctCloudProviders$: Promise<string[]>;
   distinctServices$: Promise<string[]>;
   distinctRegions$: Promise<string[]>;
   distinctProjects$: Promise<string[]>;
@@ -26,6 +27,7 @@ export class SearchDrawerComponent implements OnInit {
 
   ngOnInit(): void {
     this.form$ = this.store.select('searchForm');
+    this.distinctCloudProviders$ = this.resourceService.fetchDistinctField('cloudProvider');
     this.distinctServices$ = this.resourceService.fetchDistinctField('service');
     this.distinctRegions$ = this.resourceService.fetchDistinctField('region');
     this.distinctProjects$ = this.resourceService.fetchDistinctField('projectId');
