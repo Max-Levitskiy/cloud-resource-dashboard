@@ -22,7 +22,7 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
   displayedColumns: string[] = [
     'CloudProvider',
     'Service',
-    'AccountId',
+    'ProjectId',
     'ResourceId',
     'Region',
     'CreationDate',
@@ -66,6 +66,9 @@ export class ListComponent implements OnInit, OnDestroy, AfterViewInit {
           }
           if (this.controls.region.value) {
             queryParams.terms.set('Region', this.controls.region.value);
+          }
+          if (this.controls.projectId.value) {
+            queryParams.terms.set('ProjectId', this.controls.projectId.value);
           }
           if (this.sort.active && this.sort.direction) {
             const sortParam: SortParam = {};

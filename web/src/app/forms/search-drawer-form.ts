@@ -5,12 +5,14 @@ import {FormControlState} from 'ngrx-forms/src/state';
 export interface SearchParams {
   service;
   region;
+  projectId;
   query;
 }
 
 const formInitState: SearchParams = {
   service: null,
   region: null,
+  projectId: null,
   query: null
 };
 

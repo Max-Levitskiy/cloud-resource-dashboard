@@ -28,6 +28,20 @@
         </mat-autocomplete>
       </mat-form-field>
     </p>
+    <p>
+      <mat-form-field appearance="outline">
+        <input type="text"
+               placeholder="Project id"
+               matInput
+               [ngrxFormControlState]="(form$ | async).controls.projectId"
+               [matAutocomplete]="projects">
+        <mat-autocomplete autoActiveFirstOption #projects="matAutocomplete">
+          <mat-option *ngFor="let option of distinctProjects$ | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
   </mat-drawer>
   <button mat-button (click)="advancedSearch.toggle()">Show advancedSearch</button>
   <ng-content></ng-content>

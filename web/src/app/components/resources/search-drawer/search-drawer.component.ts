@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {FormGroupState} from 'ngrx-forms';
+import {FormGroupState, FormState} from 'ngrx-forms';
 import {Store} from '@ngrx/store';
 import {State} from '../../../reducers';
 import {SearchParams} from '../../../forms/search-drawer-form';
@@ -17,6 +17,7 @@ export class SearchDrawerComponent implements OnInit {
   form$: Observable<FormGroupState<SearchParams>>;
   distinctServices$: Promise<string[]>;
   distinctRegions$: Promise<string[]>;
+  distinctProjects$: Promise<string[]>;
 
   constructor(private store: Store<State>,
               private resourceService: ResourceService
@@ -27,5 +28,6 @@ export class SearchDrawerComponent implements OnInit {
     this.form$ = this.store.select('searchForm');
     this.distinctServices$ = this.resourceService.fetchDistinctField('service');
     this.distinctRegions$ = this.resourceService.fetchDistinctField('region');
+    this.distinctProjects$ = this.resourceService.fetchDistinctField('projectId');
   }
 }

@@ -26,6 +26,7 @@ import {environment} from '../environments/environment';
 import {ResourceCountComponent} from './components/resources/resource-count/resource-count.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -36,30 +37,31 @@ import {MatChipsModule} from '@angular/material/chips';
     SearchDrawerComponent,
     ResourceCountComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
 
-    MatTableModule,
-    MatPaginatorModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatButtonModule,
-    MatSortModule,
-    NgrxFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatButtonModule,
+        MatSortModule,
+        NgrxFormsModule,
 
-    // ngrx
-    StoreModule.forRoot(reducers, {metaReducers}),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
-    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
-    MatAutocompleteModule,
-    MatChipsModule,
-  ],
+        // ngrx
+        StoreModule.forRoot(reducers, {metaReducers}),
+        !environment.production ? StoreDevtoolsModule.instrument() : [],
+        StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
+        MatAutocompleteModule,
+        MatChipsModule,
+        MatIconModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

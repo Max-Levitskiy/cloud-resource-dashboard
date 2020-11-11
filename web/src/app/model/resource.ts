@@ -1,7 +1,7 @@
 export class Resource {
     CloudProvider: string;
     ResourceType: string;
-    AccountId: string;
+    ProjectId: string;
     Name: string;
     Region: string;
     CreationDate: Date;
