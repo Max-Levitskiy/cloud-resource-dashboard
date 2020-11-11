@@ -24,7 +24,7 @@ func (ScannerCloudFunctions) Scan(s *session.Session, outCh chan<- []*model.Reso
 					CloudId:       function.Name,
 					CloudProvider: clouds.GCP,
 					Service:       "CloudFunctions",
-					AccountId:     &gcpResourceName.ProjectId,
+					ProjectId:     &gcpResourceName.ProjectId,
 					ResourceId:    &gcpResourceName.ResourceName,
 					Region:        &gcpResourceName.Location,
 					Tags:          function.Labels,

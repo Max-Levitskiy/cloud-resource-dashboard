@@ -9,11 +9,11 @@ import (
 	"log"
 )
 
-func ScanEc2(accountId *string, region string) {
-	log.Printf("Start scan EC2 for %s account %s region", *accountId, region)
+func ScanEc2(projectId *string, region string) {
+	log.Printf("Start scan EC2 for %s account %s region", *projectId, region)
 	listS3, err := listEC2(region)
 	if err == nil {
-		resources := ec2InstancesToResources(listS3.Reservations, accountId, &region)
+		resources := ec2InstancesToResources(listS3.Reservations, projectId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	log.Printf("Scan EC2 for %s region finished", region)
@@ -33,14 +33,14 @@ func listEC2(region string) (*ec2.DescribeInstancesOutput, error) {
 	}
 }
 
-func ec2InstancesToResources(reservations []*ec2.Reservation, accountId *string, region *string) []*model.Resource {
+func ec2InstancesToResources(reservations []*ec2.Reservation, projectId *string, region *string) []*model.Resource {
 	var resources = make([]*model.Resource, len(reservations))
 	for i, reservation := range reservations {
 		for _, instance := range reservation.Instances {
 			resources[i] = &model.Resource{
 				CloudProvider: clouds.AWS,
 				Service:       "ec2",
-				AccountId:     accountId,
+				ProjectId:     projectId,
 				Region:        region,
 				ResourceId:    instance.InstanceId,
 				CreationDate:  instance.LaunchTime,

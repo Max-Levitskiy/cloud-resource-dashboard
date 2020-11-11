@@ -24,7 +24,7 @@ func TestSaveResource(t *testing.T) {
 
 	assert.Equal(t, resource.CloudId, savedResource.CloudId)
 	assert.Equal(t, resource.Service, savedResource.Service)
-	assert.Equal(t, resource.AccountId, savedResource.AccountId)
+	assert.Equal(t, resource.ProjectId, savedResource.ProjectId)
 	assert.Equal(t, resource.ResourceId, savedResource.ResourceId)
 	assert.Equal(t, resource.Tags, savedResource.Tags)
 	assert.True(t, resource.CreationDate.Equal(*savedResource.CreationDate))
@@ -42,7 +42,7 @@ func TestBulkSave(t *testing.T) {
 
 	assert.Equal(t, resource.CloudId, savedResource.CloudId)
 	assert.Equal(t, resource.Service, savedResource.Service)
-	assert.Equal(t, resource.AccountId, savedResource.AccountId)
+	assert.Equal(t, resource.ProjectId, savedResource.ProjectId)
 	assert.Equal(t, resource.ResourceId, savedResource.ResourceId)
 	assert.Equal(t, resource.Tags, savedResource.Tags)
 	assert.True(t, resource.CreationDate.Equal(*savedResource.CreationDate))
@@ -118,14 +118,14 @@ func TestElastic_DistinctResourceField(t *testing.T) {
 }
 
 func getResourceExample() model.Resource {
-	accountId := "someAccId"
+	projectId := "someAccId"
 	name := uuid.New().String()
 	region := "us-east-1"
 	date := time.Now()
 	resource := model.Resource{
 		CloudProvider: "AWS",
 		Service:       "testType",
-		AccountId:     &accountId,
+		ProjectId:     &projectId,
 		ResourceId:    &name,
 		Region:        &region,
 		CreationDate:  &date,

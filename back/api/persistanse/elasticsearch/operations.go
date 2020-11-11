@@ -201,7 +201,7 @@ func (e *elastic) updateIndexMapping() {
 				"CloudProvider": {
 					"type": "keyword"
 				},
-				"AccountId": {
+				"ProjectId": {
 					"type": "keyword"
 				},
 				"ResourceId": {

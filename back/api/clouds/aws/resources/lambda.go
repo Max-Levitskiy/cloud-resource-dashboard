@@ -9,11 +9,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanLambdaFunctions(accountId *string, region string) {
-	logrus.Infof("Start scan LambdaFunctions for %s account %s region", *accountId, region)
+func ScanLambdaFunctions(projectId *string, region string) {
+	logrus.Infof("Start scan LambdaFunctions for %s account %s region", *projectId, region)
 	lambdaList, err := listLambdaFunctions(region)
 	if err == nil {
-		resources := LambdaInstancesToResources(lambdaList.Functions, accountId, &region)
+		resources := LambdaInstancesToResources(lambdaList.Functions, projectId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	logrus.Infof("Scan LambdaFunctions for %s region finished", region)
@@ -33,14 +33,14 @@ func listLambdaFunctions(region string) (*lambda.ListFunctionsOutput, error) {
 	}
 }
 
-func LambdaInstancesToResources(lambdas []*lambda.FunctionConfiguration, accountId *string, region *string) []*model.Resource {
+func LambdaInstancesToResources(lambdas []*lambda.FunctionConfiguration, projectId *string, region *string) []*model.Resource {
 	var resources = make([]*model.Resource, len(lambdas))
 	for i, lambda := range lambdas {
 
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "lambda",
-			AccountId:     accountId,
+			ProjectId:     projectId,
 			Region:        region,
 			ResourceId:    lambda.FunctionArn,
 		}

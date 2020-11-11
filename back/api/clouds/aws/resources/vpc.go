@@ -9,12 +9,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanVpc(accountId *string, region string) {
-	logrus.Infof("Start Scan VPC for %s account %s region", *accountId, region)
+func ScanVpc(projectId *string, region string) {
+	logrus.Infof("Start Scan VPC for %s account %s region", *projectId, region)
 	list, err := listVpc(region)
 	if err == nil {
 		if list.Vpcs != nil && len(list.Vpcs) > 0 {
-			resources := vpcToResources(list.Vpcs, accountId, &region)
+			resources := vpcToResources(list.Vpcs, projectId, &region)
 			elasticsearch.Client.BulkSave(resources)
 		}
 	} else {
@@ -36,14 +36,14 @@ func listVpc(region string) (*ec2.DescribeVpcsOutput, error) {
 	}
 }
 
-func vpcToResources(vpcs []*ec2.Vpc, accountId *string, region *string) []*model.Resource {
+func vpcToResources(vpcs []*ec2.Vpc, projectId *string, region *string) []*model.Resource {
 	var resources = make([]*model.Resource, len(vpcs))
 	for i, vpc := range vpcs {
 
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "vpc",
-			AccountId:     accountId,
+			ProjectId:     projectId,
 			Region:        region,
 			ResourceId:    vpc.VpcId,
 			Tags:          vpcToResourceTags(vpc.Tags),

@@ -25,27 +25,27 @@ func FullScan() {
 	}()
 	logger.Info.Println("Start AWS Scan")
 	for _, profileName := range conf.Inst.AWS.ProfileNames {
-		accountId := getAccountId(profileName)
+		projectId := getProjectId(profileName)
 		for _, scanner := range regionGlobalScanners {
-			go func(s types.GlobalResourceScanner, accountId *string, profileName *string) {
+			go func(s types.GlobalResourceScanner, projectId *string, profileName *string) {
 				scannerType := reflect.TypeOf(s).String()
-				logger.Info.Printf("Starting %s Scan for profile %s, account id: %s", scannerType, *profileName, *accountId)
-				s.Scan(accountId, profileName)
-				logger.Info.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *accountId)
-			}(scanner, accountId, profileName)
+				logger.Info.Printf("Starting %s Scan for profile %s, account id: %s", scannerType, *profileName, *projectId)
+				s.Scan(projectId, profileName)
+				logger.Info.Printf("Finished %s for profile %s, account id: %s", scannerType, *profileName, *projectId)
+			}(scanner, projectId, profileName)
 		}
 		for _, region := range awsRegions {
-			//go scanS3(accountId, region, profileName)
-			go resources.ScanEc2(accountId, region)
-			go resources.ScanEBS(accountId, region)
-			go resources.ScanElb(accountId, region)
-			go resources.ScanLambdaFunctions(accountId, region)
-			go resources.ScanVpc(accountId, region)
+			//go scanS3(projectId, region, profileName)
+			go resources.ScanEc2(projectId, region)
+			go resources.ScanEBS(projectId, region)
+			go resources.ScanElb(projectId, region)
+			go resources.ScanLambdaFunctions(projectId, region)
+			go resources.ScanVpc(projectId, region)
 		}
 	}
 }
 
-func getAccountId(profileName *string) *string {
+func getProjectId(profileName *string) *string {
 	s := sts.New(session.Get(session.DefaultRegion, profileName))
 	identity, err := s.GetCallerIdentity(&sts.GetCallerIdentityInput{})
 	if err == nil {

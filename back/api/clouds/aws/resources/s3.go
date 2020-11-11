@@ -18,11 +18,11 @@ type S3Scanner struct {
 
 var unknownRegion = "unknown"
 
-func (S3Scanner) Scan(accountId *string, profileName *string) {
+func (S3Scanner) Scan(projectId *string, profileName *string) {
 	s := session2.GetForDefaultRegion(profileName)
 	listS3, err := listS3(s)
 	if err == nil {
-		resources := s3BucketsToResources(listS3.Buckets, accountId, s)
+		resources := s3BucketsToResources(listS3.Buckets, projectId, s)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	log.Printf("Scan S3 for profile %s finished", *profileName)
@@ -40,13 +40,13 @@ func listS3(s *session.Session) (*s3.ListBucketsOutput, error) {
 	}
 }
 
-func s3BucketsToResources(buckets []*s3.Bucket, accountId *string, s *session.Session) []*model.Resource {
+func s3BucketsToResources(buckets []*s3.Bucket, projectId *string, s *session.Session) []*model.Resource {
 	var resources = make([]*model.Resource, len(buckets))
 	for i, bucket := range buckets {
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "s3",
-			AccountId:     accountId,
+			ProjectId:     projectId,
 			ResourceId:    bucket.Name,
 			CreationDate:  bucket.CreationDate,
 		}

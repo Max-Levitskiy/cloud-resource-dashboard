@@ -9,11 +9,11 @@ import (
 	"log"
 )
 
-func ScanEBS(accountId *string, region string) {
-	log.Printf("Start scan EBS for %s account %s region", *accountId, region)
+func ScanEBS(projectId *string, region string) {
+	log.Printf("Start scan EBS for %s account %s region", *projectId, region)
 	ebsList, err := listEBS(region)
 	if err == nil {
-		resources := ebsInstancesToResources(ebsList.Volumes, accountId, &region)
+		resources := ebsInstancesToResources(ebsList.Volumes, projectId, &region)
 		elasticsearch.Client.BulkSave(resources)
 	}
 	log.Printf("Scan EBS for %s region finished", region)
@@ -33,14 +33,14 @@ func listEBS(region string) (*ec2.DescribeVolumesOutput, error) {
 	}
 }
 
-func ebsInstancesToResources(volumes []*ec2.Volume, accountId *string, region *string) []*model.Resource {
+func ebsInstancesToResources(volumes []*ec2.Volume, projectId *string, region *string) []*model.Resource {
 	var resources = make([]*model.Resource, len(volumes))
 	for i, volume := range volumes {
 
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "ebs",
-			AccountId:     accountId,
+			ProjectId:     projectId,
 			Region:        region,
 			ResourceId:    volume.VolumeId,
 			CreationDate:  volume.CreateTime,

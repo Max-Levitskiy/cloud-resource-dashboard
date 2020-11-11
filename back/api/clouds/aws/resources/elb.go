@@ -9,12 +9,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanElb(accountId *string, region string) {
-	logrus.Infof("Start scan EBS for %s account %s region", *accountId, region)
+func ScanElb(projectId *string, region string) {
+	logrus.Infof("Start scan EBS for %s account %s region", *projectId, region)
 	list, err := listElb(region)
 	if err == nil {
 		if list.LoadBalancers != nil && len(list.LoadBalancers) > 0 {
-			resources := elbToResources(list.LoadBalancers, accountId, &region, getElbTags(region, list.LoadBalancers))
+			resources := elbToResources(list.LoadBalancers, projectId, &region, getElbTags(region, list.LoadBalancers))
 			elasticsearch.Client.BulkSave(resources)
 		}
 	} else {
@@ -36,14 +36,14 @@ func listElb(region string) (*elbv2.DescribeLoadBalancersOutput, error) {
 	}
 }
 
-func elbToResources(elbs []*elbv2.LoadBalancer, accountId *string, region *string, tags *map[string]map[string]string) []*model.Resource {
+func elbToResources(elbs []*elbv2.LoadBalancer, projectId *string, region *string, tags *map[string]map[string]string) []*model.Resource {
 	var resources = make([]*model.Resource, len(elbs))
 	for i, elb := range elbs {
 
 		resources[i] = &model.Resource{
 			CloudProvider: clouds.AWS,
 			Service:       "elb",
-			AccountId:     accountId,
+			ProjectId:     projectId,
 			Region:        region,
 			ResourceId:    elb.DNSName,
 			CreationDate:  elb.CreatedTime,
