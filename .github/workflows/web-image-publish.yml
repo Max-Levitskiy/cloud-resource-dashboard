@@ -6,7 +6,7 @@ on:
     branches:
       - master
     paths:
-      - ./back/api
+      - ./web
       - .github/workflows/web-image-publish.yml
 
     # Publish `v1.2.3` tags as releases.
@@ -16,7 +16,7 @@ on:
   # Run tests for any PRs.
   pull_request:
     paths:
-      - ./back/api
+      - ./web
       - .github/workflows/web-image-publish.yml
 
 env:
