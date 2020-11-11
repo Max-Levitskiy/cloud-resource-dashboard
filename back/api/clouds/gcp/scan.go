@@ -11,6 +11,7 @@ import (
 
 var scanners = []types.Scanner{
 	resources.ScannerCloudFunctions{},
+	resources.ScannerRun{},
 }
 
 func FullScan() {
