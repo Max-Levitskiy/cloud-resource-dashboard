@@ -12,12 +12,12 @@ import (
 var activeSessionsCache sync.Map
 var noProfile = "[noprofile]"
 
-const DefaultRegion = "us-east-1"
+var DefaultRegion = "us-east-1"
 
 func GetForDefaultRegion(profile ...*string) *session.Session {
-	return Get(DefaultRegion, profile...)
+	return Get(&DefaultRegion, profile...)
 }
-func Get(region string, profile ...*string) *session.Session {
+func Get(region *string, profile ...*string) *session.Session {
 	if len(profile) > 1 {
 		log.Panic("You can use no more then 1 profile. Given: ", profile)
 	}
@@ -26,13 +26,13 @@ func Get(region string, profile ...*string) *session.Session {
 	if profileName = &noProfile; profileGiven {
 		profileName = profile[0]
 	}
-	cacheKey := fmt.Sprintf("%s:%s", *profileName, region)
+	cacheKey := fmt.Sprintf("%s:%s", *profileName, *region)
 	if s, ok := activeSessionsCache.Load(cacheKey); ok {
 		return s.(*session.Session)
 	} else {
 		options := session.Options{
 			Config: aws.Config{
-				Region:                        &region,
+				Region:                        region,
 				CredentialsChainVerboseErrors: aws.Bool(true),
 			},
 		}
@@ -42,8 +42,7 @@ func Get(region string, profile ...*string) *session.Session {
 			_ = os.Unsetenv("AWS_SECRET_ACCESS_KEY")
 			options.Profile = *profile[0]
 		}
-		s, err := session.NewSessionWithOptions(options)
-		if err == nil {
+		if s, err := session.NewSessionWithOptions(options); err == nil {
 			activeSessionsCache.Store(cacheKey, s)
 			return s
 		} else {

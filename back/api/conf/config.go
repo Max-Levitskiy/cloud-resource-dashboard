@@ -27,7 +27,7 @@ type config struct {
 	} `yaml:"elastic"`
 	AWS struct {
 		ConfigPath   string
-		ProfileNames []*string
+		ProfileNames []string
 	}
 	GCP struct {
 		CredentialsPath *string `yaml:"credentials-path" envconf:"GCP_CREDENTIALS_PATH"`
@@ -70,7 +70,7 @@ func readAwsProfiles(cfg *config) {
 			if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
 				line = strings.TrimPrefix(line, "[")
 				line = strings.TrimSuffix(line, "]")
-				cfg.AWS.ProfileNames = append(cfg.AWS.ProfileNames, &line)
+				cfg.AWS.ProfileNames = append(cfg.AWS.ProfileNames, line)
 			}
 		}
 	} else {

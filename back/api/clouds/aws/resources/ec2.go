@@ -2,53 +2,37 @@ package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
-	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
-	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"log"
 )
 
-func ScanEc2(projectId *string, region string) {
-	log.Printf("Start scan EC2 for %s account %s region", *projectId, region)
-	listS3, err := listEC2(region)
+type Ec2Scanner struct{}
+
+func (e Ec2Scanner) Scan(projectId *string, region *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
+	listS3, err := listEC2(region, profileName)
 	if err == nil {
-		resources := ec2InstancesToResources(listS3.Reservations, projectId, &region)
-		elasticsearch.Client.BulkSave(resources)
-	}
-	log.Printf("Scan EC2 for %s region finished", region)
-}
-
-func listEC2(region string) (*ec2.DescribeInstancesOutput, error) {
-	input := &ec2.DescribeInstancesInput{}
-	session := session2.Get(region)
-
-	svc := ec2.New(session)
-
-	result, err := svc.DescribeInstances(input)
-	if err == nil {
-		return result, nil
-	} else {
-		return nil, err
-	}
-}
-
-func ec2InstancesToResources(reservations []*ec2.Reservation, projectId *string, region *string) []*model.Resource {
-	var resources = make([]*model.Resource, len(reservations))
-	for i, reservation := range reservations {
-		for _, instance := range reservation.Instances {
-			resources[i] = &model.Resource{
-				CloudProvider: clouds.AWS,
-				Service:       "ec2",
-				ProjectId:     projectId,
-				Region:        region,
-				ResourceId:    instance.InstanceId,
-				CreationDate:  instance.LaunchTime,
-				Tags:          awsToResourceTags(instance.Tags),
+		for _, reservation := range listS3.Reservations {
+			for _, instance := range reservation.Instances {
+				saveCh <- &model.Resource{
+					CloudProvider: clouds.AWS,
+					Service:       "ec2",
+					ProjectId:     projectId,
+					Region:        region,
+					ResourceId:    instance.InstanceId,
+					CreationDate:  instance.LaunchTime,
+					Tags:          awsToResourceTags(instance.Tags),
+				}
 			}
 		}
+	} else {
+		errCh <- err
 	}
-	return resources
+}
+
+func listEC2(region *string, profileName *string) (*ec2.DescribeInstancesOutput, error) {
+	svc := ec2.New(session.Get(region, profileName))
+	return svc.DescribeInstances(&ec2.DescribeInstancesInput{})
 }
 
 func awsToResourceTags(tags []*ec2.Tag) map[string]string {

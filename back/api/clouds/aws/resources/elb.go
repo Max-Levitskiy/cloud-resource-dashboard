@@ -2,60 +2,45 @@ package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
-	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
-	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/elbv2"
-	"github.com/sirupsen/logrus"
 )
 
-func ScanElb(projectId *string, region string) {
-	logrus.Infof("Start scan EBS for %s account %s region", *projectId, region)
-	list, err := listElb(region)
+type ElbScanner struct{}
+
+func (e ElbScanner) Scan(projectId *string, region *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
+	list, err := listElb(region, profileName)
 	if err == nil {
 		if list.LoadBalancers != nil && len(list.LoadBalancers) > 0 {
-			resources := elbToResources(list.LoadBalancers, projectId, &region, getElbTags(region, list.LoadBalancers))
-			elasticsearch.Client.BulkSave(resources)
+			tags := getElbTags(region, list.LoadBalancers)
+			for _, elb := range list.LoadBalancers {
+				r := &model.Resource{
+					CloudProvider: clouds.AWS,
+					Service:       "elb",
+					ProjectId:     projectId,
+					Region:        region,
+					ResourceId:    elb.DNSName,
+					CreationDate:  elb.CreatedTime,
+				}
+				if elbTags, ok := (*tags)[*elb.LoadBalancerArn]; ok {
+					r.Tags = elbTags
+				}
+				saveCh <- r
+			}
 		}
 	} else {
-		logrus.Error(err)
-	}
-	logrus.Infof("Scan EBS for %s region finished", region)
-}
-
-func listElb(region string) (*elbv2.DescribeLoadBalancersOutput, error) {
-	session := session2.Get(region)
-
-	svc := elbv2.New(session)
-
-	result, err := svc.DescribeLoadBalancers(&elbv2.DescribeLoadBalancersInput{})
-	if err == nil {
-		return result, nil
-	} else {
-		return nil, err
+		errCh <- err
 	}
 }
 
-func elbToResources(elbs []*elbv2.LoadBalancer, projectId *string, region *string, tags *map[string]map[string]string) []*model.Resource {
-	var resources = make([]*model.Resource, len(elbs))
-	for i, elb := range elbs {
-
-		resources[i] = &model.Resource{
-			CloudProvider: clouds.AWS,
-			Service:       "elb",
-			ProjectId:     projectId,
-			Region:        region,
-			ResourceId:    elb.DNSName,
-			CreationDate:  elb.CreatedTime,
-		}
-		if elbTags, ok := (*tags)[*elb.LoadBalancerArn]; ok {
-			resources[i].Tags = elbTags
-		}
-	}
-	return resources
+func listElb(region *string, profileName *string) (*elbv2.DescribeLoadBalancersOutput, error) {
+	svc := elbv2.New(session.Get(region, profileName))
+	return svc.DescribeLoadBalancers(&elbv2.DescribeLoadBalancersInput{})
 }
 
-func getElbTags(region string, elbs []*elbv2.LoadBalancer) *map[string]map[string]string {
+func getElbTags(region *string, elbs []*elbv2.LoadBalancer) *map[string]map[string]string {
 	var arns []*string
 	tagsResult := make(map[string]map[string]string)
 	for _, elb := range elbs {
@@ -69,8 +54,8 @@ func getElbTags(region string, elbs []*elbv2.LoadBalancer) *map[string]map[strin
 	return &tagsResult
 }
 
-func describeElbTags(region string, arns []*string, m *map[string]map[string]string) error {
-	svc := elbv2.New(session2.Get(region))
+func describeElbTags(region *string, arns []*string, m *map[string]map[string]string) {
+	svc := elbv2.New(session.Get(region))
 	input := &elbv2.DescribeTagsInput{
 		ResourceArns: arns,
 	}
@@ -81,10 +66,8 @@ func describeElbTags(region string, arns []*string, m *map[string]map[string]str
 			}
 
 		}
-		return nil
 	} else {
-		logrus.Error(err)
-		return err
+		logger.Warn.Println(err)
 	}
 }
 

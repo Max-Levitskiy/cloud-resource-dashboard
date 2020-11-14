@@ -2,22 +2,19 @@ package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
-	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
-	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/types"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
-	"github.com/aws/aws-sdk-go/aws/session"
+	awsSession "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"log"
 )
 
-type S3Scanner struct {
-	types.GlobalResourceScanner
-}
+type S3Scanner struct{}
 
 var unknownRegion = "unknown"
 
 func (S3Scanner) Scan(projectId *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
-	s := session2.GetForDefaultRegion(profileName)
+	s := session.GetForDefaultRegion(profileName)
 	listS3, err := listS3(s)
 	if err == nil {
 		for _, bucket := range listS3.Buckets {
@@ -38,19 +35,12 @@ func (S3Scanner) Scan(projectId *string, profileName *string, saveCh chan<- *mod
 	}
 }
 
-func listS3(s *session.Session) (*s3.ListBucketsOutput, error) {
-	input := &s3.ListBucketsInput{}
+func listS3(s *awsSession.Session) (*s3.ListBucketsOutput, error) {
 	svc := s3.New(s)
-
-	result, err := svc.ListBuckets(input)
-	if err == nil {
-		return result, nil
-	} else {
-		return nil, err
-	}
+	return svc.ListBuckets(&s3.ListBucketsInput{})
 }
 
-func fetchRegion(bucketName *string, s *session.Session) *string {
+func fetchRegion(bucketName *string, s *awsSession.Session) *string {
 	input := &s3.GetBucketLocationInput{
 		Bucket: bucketName,
 	}
@@ -60,7 +50,7 @@ func fetchRegion(bucketName *string, s *session.Session) *string {
 	if err == nil && bucketLocation.LocationConstraint != nil {
 		return bucketLocation.LocationConstraint
 	} else {
-		log.Print("Can't fetch region for bucket ", *bucketName, "Error: ", err)
+		logger.Warn.Print("Can't fetch region for bucket ", *bucketName, "Error: ", err)
 		return &unknownRegion
 	}
 }

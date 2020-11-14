@@ -2,31 +2,39 @@ package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
-	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/sirupsen/logrus"
 )
 
-func ScanVpc(projectId *string, region string) {
-	logrus.Infof("Start Scan VPC for %s account %s region", *projectId, region)
-	list, err := listVpc(region)
-	if err == nil {
+type VpcScanner struct{}
+
+func (VpcScanner) Scan(projectId *string, region *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
+	if list, err := listVpc(region, profileName); err == nil {
 		if list.Vpcs != nil && len(list.Vpcs) > 0 {
-			resources := vpcToResources(list.Vpcs, projectId, &region)
+			for _, vpc := range list.Vpcs {
+
+				saveCh <- &model.Resource{
+					CloudProvider: clouds.AWS,
+					Service:       "vpc",
+					ProjectId:     projectId,
+					Region:        region,
+					ResourceId:    vpc.VpcId,
+					Tags:          vpcToResourceTags(vpc.Tags),
+				}
+			}
+			resources := vpcToResources(list.Vpcs, projectId, region)
 			elasticsearch.Client.BulkSave(resources)
 		}
 	} else {
-		logrus.Error(err)
+		errCh <- err
 	}
-	logrus.Infof("Scan VPC for %s region finished", region)
+
 }
 
-func listVpc(region string) (*ec2.DescribeVpcsOutput, error) {
-	session := session2.Get(region)
-
-	svc := ec2.New(session)
+func listVpc(region *string, profileName *string) (*ec2.DescribeVpcsOutput, error) {
+	svc := ec2.New(session.Get(region, profileName))
 
 	result, err := svc.DescribeVpcs(&ec2.DescribeVpcsInput{})
 	if err == nil {
