@@ -6,7 +6,6 @@ import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/mitchellh/go-homedir"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path"
@@ -121,8 +120,7 @@ func readEnv(cfg *config) {
 	}
 }
 func processError(err error) {
-	fmt.Println(err)
-	logrus.Fatal("Can't read config. Exit.")
+	logger.Error.Fatalf("Can't read config. Exit. Error: %v", err)
 }
 
 func getConfigDir() string {
