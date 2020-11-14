@@ -17,7 +17,7 @@ var regionGlobalScanners = []types.GlobalResourceScanner{
 	resources.S3Scanner{},
 }
 
-func FullScan() {
+func FullScan(errCh chan<- error) {
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Warn.Println("Recovered: ", r)

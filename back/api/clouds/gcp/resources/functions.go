@@ -19,7 +19,7 @@ func (ScannerCloudFunctions) Scan(s *session.Session, outCh chan<- []*model.Reso
 		if response, err := service.Projects.Locations.Functions.List(parent).Do(); err == nil {
 			var resources []*model.Resource
 			for _, function := range response.Functions {
-				gcpResourceName := parser.Parse(function.Name)
+				gcpResourceName := parser.ParseName(function.Name)
 				resources = append(resources, &model.Resource{
 					CloudId:       function.Name,
 					CloudProvider: clouds.GCP,

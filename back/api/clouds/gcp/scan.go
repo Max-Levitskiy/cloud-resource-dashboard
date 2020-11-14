@@ -12,27 +12,24 @@ import (
 var scanners = []types.Scanner{
 	resources.ScannerCloudFunctions{},
 	resources.ScannerRun{},
+	resources.ScannerComputeInstances{},
 }
 
-func FullScan() {
+func FullScan(errCh chan<- error) {
 	for _, s := range session.GetSessions() {
 		for _, scanner := range scanners {
 			var (
 				outCh = make(chan []*model.Resource)
-				errCh = make(chan error)
 			)
 			go scanner.Scan(s, outCh, errCh)
 			go func() {
 				defer close(outCh)
-				defer close(errCh)
 				select {
 				case r := <-outCh:
 					logger.Info.Println(r)
 					if len(r) > 0 {
 						elasticsearch.Client.BulkSave(r)
 					}
-				case err := <-errCh:
-					logger.Error.Println(err)
 				}
 			}()
 		}
