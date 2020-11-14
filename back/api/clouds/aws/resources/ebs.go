@@ -2,28 +2,37 @@ package resources
 
 import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds"
-	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
-	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"log"
 )
 
-func ScanEBS(projectId *string, region string) {
-	log.Printf("Start scan EBS for %s account %s region", *projectId, region)
-	ebsList, err := listEBS(region)
-	if err == nil {
-		resources := ebsInstancesToResources(ebsList.Volumes, projectId, &region)
-		elasticsearch.Client.BulkSave(resources)
-	}
-	log.Printf("Scan EBS for %s region finished", region)
+type EbsScanner struct {
 }
 
-func listEBS(region string) (*ec2.DescribeVolumesOutput, error) {
+func (e EbsScanner) Scan(projectId *string, region *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
+	ebsList, err := listEBS(region, profileName)
+	if err == nil {
+		for _, volume := range ebsList.Volumes {
+			saveCh <- &model.Resource{
+				CloudProvider: clouds.AWS,
+				Service:       "ebs",
+				ProjectId:     projectId,
+				Region:        region,
+				ResourceId:    volume.VolumeId,
+				CreationDate:  volume.CreateTime,
+				Tags:          awsToResourceTags(volume.Tags),
+			}
+		}
+	} else {
+		errCh <- err
+	}
+}
+func listEBS(region *string, profileName *string) (*ec2.DescribeVolumesOutput, error) {
 	input := &ec2.DescribeVolumesInput{}
-	session := session2.Get(region)
+	s := session.Get(*region, profileName)
 
-	svc := ec2.New(session)
+	svc := ec2.New(s)
 
 	result, err := svc.DescribeVolumes(input)
 	if err == nil {
@@ -31,21 +40,4 @@ func listEBS(region string) (*ec2.DescribeVolumesOutput, error) {
 	} else {
 		return nil, err
 	}
-}
-
-func ebsInstancesToResources(volumes []*ec2.Volume, projectId *string, region *string) []*model.Resource {
-	var resources = make([]*model.Resource, len(volumes))
-	for i, volume := range volumes {
-
-		resources[i] = &model.Resource{
-			CloudProvider: clouds.AWS,
-			Service:       "ebs",
-			ProjectId:     projectId,
-			Region:        region,
-			ResourceId:    volume.VolumeId,
-			CreationDate:  volume.CreateTime,
-			Tags:          awsToResourceTags(volume.Tags),
-		}
-	}
-	return resources
 }

@@ -6,5 +6,5 @@ import (
 )
 
 type Scanner interface {
-	Scan(s *session.Session, outCh chan<- []*model.Resource, errCh chan<- error)
+	Scan(s *session.Session, saveCh chan<- *model.Resource, errCh chan<- error)
 }

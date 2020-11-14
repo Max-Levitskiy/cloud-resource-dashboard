@@ -82,7 +82,7 @@ func (e *elastic) GetResourceById(documentId string) *model.Resource {
 }
 
 func (e *elastic) BulkSave(resources []*model.Resource) {
-	log.Println("Start bulk save")
+	logger.Info.Printf("Start bulk save. Total: %d", len(resources))
 	var (
 		buf bytes.Buffer
 		res *esapi.Response

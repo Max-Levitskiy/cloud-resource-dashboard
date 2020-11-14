@@ -15,13 +15,13 @@ var scanners = []types.Scanner{
 	resources.ScannerComputeInstances{},
 }
 
-func FullScan(errCh chan<- error) {
+func FullScan(saveCh chan<- *model.Resource, errCh chan<- error) {
 	for _, s := range session.GetSessions() {
 		for _, scanner := range scanners {
 			var (
 				outCh = make(chan []*model.Resource)
 			)
-			go scanner.Scan(s, outCh, errCh)
+			go scanner.Scan(s, saveCh, errCh)
 			go func() {
 				defer close(outCh)
 				select {

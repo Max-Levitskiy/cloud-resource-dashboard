@@ -5,11 +5,9 @@ import (
 	session2 "github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/session"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws/types"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
-	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"log"
-	"sync"
 )
 
 type S3Scanner struct {
@@ -18,14 +16,26 @@ type S3Scanner struct {
 
 var unknownRegion = "unknown"
 
-func (S3Scanner) Scan(projectId *string, profileName *string) {
+func (S3Scanner) Scan(projectId *string, profileName *string, saveCh chan<- *model.Resource, errCh chan<- error) {
 	s := session2.GetForDefaultRegion(profileName)
 	listS3, err := listS3(s)
 	if err == nil {
-		resources := s3BucketsToResources(listS3.Buckets, projectId, s)
-		elasticsearch.Client.BulkSave(resources)
+		for _, bucket := range listS3.Buckets {
+			go func(b *s3.Bucket) {
+				r := &model.Resource{
+					CloudProvider: clouds.AWS,
+					Service:       "s3",
+					ProjectId:     projectId,
+					ResourceId:    b.Name,
+					CreationDate:  b.CreationDate,
+				}
+				r.Region = fetchRegion(b.Name, s)
+				saveCh <- r
+			}(bucket)
+		}
+	} else {
+		errCh <- err
 	}
-	log.Printf("Scan S3 for profile %s finished", *profileName)
 }
 
 func listS3(s *session.Session) (*s3.ListBucketsOutput, error) {
@@ -38,34 +48,6 @@ func listS3(s *session.Session) (*s3.ListBucketsOutput, error) {
 	} else {
 		return nil, err
 	}
-}
-
-func s3BucketsToResources(buckets []*s3.Bucket, projectId *string, s *session.Session) []*model.Resource {
-	var resources = make([]*model.Resource, len(buckets))
-	for i, bucket := range buckets {
-		resources[i] = &model.Resource{
-			CloudProvider: clouds.AWS,
-			Service:       "s3",
-			ProjectId:     projectId,
-			ResourceId:    bucket.Name,
-			CreationDate:  bucket.CreationDate,
-		}
-	}
-	fetchBucketsRegions(&resources, s)
-
-	return resources
-}
-
-func fetchBucketsRegions(buckets *[]*model.Resource, s *session.Session) {
-	var wg sync.WaitGroup
-	wg.Add(len(*buckets))
-	for _, bucket := range *buckets {
-		go func(b *model.Resource, wg *sync.WaitGroup) {
-			b.Region = fetchRegion(b.ResourceId, s)
-			wg.Done()
-		}(bucket, &wg)
-	}
-	wg.Wait()
 }
 
 func fetchRegion(bucketName *string, s *session.Session) *string {

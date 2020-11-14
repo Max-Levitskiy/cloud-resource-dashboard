@@ -5,10 +5,11 @@ import (
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/aws"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/clouds/gcp"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/logger"
+	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/model"
 	"github.com/Max-Levitskiy/cloud-resource-dashboard/api/persistanse/elasticsearch"
 )
 
-var providers = map[string]func(errCh chan<- error){
+var providers = map[string]func(saveCh chan<- *model.Resource, errCh chan<- error){
 	clouds.AWS: aws.FullScan,
 	clouds.GCP: gcp.FullScan,
 }
@@ -18,7 +19,7 @@ func StartFullScan() {
 	elasticsearch.Client.ClearResourceIndex()
 	elasticsearch.Client.CreateIndex()
 	for _, f := range providers {
-		go f(errCh)
+		go f(elasticsearch.BulkSaveCh, errCh)
 	}
 }
 func initErrChan() chan error {

@@ -14,11 +14,10 @@ import (
 type ScannerRun struct {
 }
 
-func (ScannerRun) Scan(s *session.Session, outCh chan<- []*model.Resource, errCh chan<- error) {
+func (ScannerRun) Scan(s *session.Session, saveCh chan<- *model.Resource, errCh chan<- error) {
 	if service, err := run.NewService(context.Background(), s.GetCredentialsOption()); err == nil {
 		parent := fmt.Sprintf("projects/%s/locations/-", s.GetProject().ProjectId)
 		if response, err := service.Projects.Locations.Services.List(parent).Do(); err == nil {
-			var resources []*model.Resource
 			for _, item := range response.Items {
 				region := item.Metadata.Labels["cloud.googleapis.com/location"]
 				resource := model.Resource{
@@ -35,9 +34,8 @@ func (ScannerRun) Scan(s *session.Session, outCh chan<- []*model.Resource, errCh
 				} else {
 					logger.Warn.Println(err)
 				}
-				resources = append(resources, &resource)
+				saveCh <- &resource
 			}
-			outCh <- resources
 		} else {
 			errCh <- err
 		}

@@ -13,14 +13,13 @@ import (
 type ScannerCloudFunctions struct {
 }
 
-func (ScannerCloudFunctions) Scan(s *session.Session, outCh chan<- []*model.Resource, errCh chan<- error) {
+func (ScannerCloudFunctions) Scan(s *session.Session, saveCh chan<- *model.Resource, errCh chan<- error) {
 	if service, err := cloudfunctions.NewService(context.Background(), s.GetCredentialsOption()); err == nil {
 		parent := fmt.Sprintf("projects/%s/locations/-", s.GetProject().ProjectId)
 		if response, err := service.Projects.Locations.Functions.List(parent).Do(); err == nil {
-			var resources []*model.Resource
 			for _, function := range response.Functions {
 				gcpResourceName := parser.ParseName(function.Name)
-				resources = append(resources, &model.Resource{
+				saveCh <- &model.Resource{
 					CloudId:       function.Name,
 					CloudProvider: clouds.GCP,
 					Service:       "CloudFunctions",
@@ -28,10 +27,8 @@ func (ScannerCloudFunctions) Scan(s *session.Session, outCh chan<- []*model.Reso
 					ResourceId:    &gcpResourceName.ResourceName,
 					Region:        &gcpResourceName.Location,
 					Tags:          function.Labels,
-				})
-
+				}
 			}
-			outCh <- resources
 		} else {
 			errCh <- err
 		}

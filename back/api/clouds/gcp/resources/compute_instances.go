@@ -14,12 +14,11 @@ import (
 type ScannerComputeInstances struct {
 }
 
-func (ScannerComputeInstances) Scan(s *session.Session, outCh chan<- []*model.Resource, errCh chan<- error) {
+func (ScannerComputeInstances) Scan(s *session.Session, saveCh chan<- *model.Resource, errCh chan<- error) {
 	if service, err := compute.NewService(context.Background(), s.GetCredentialsOption()); err == nil {
 		projectId := s.GetProject().ProjectId
 
 		if zoneList, err := service.Zones.List(projectId).Do(); err == nil {
-			var resources []*model.Resource
 			for _, zone := range zoneList.Items {
 				if response, err := service.Instances.List(projectId, zone.Name).Do(); err == nil {
 					for _, instance := range response.Items {
@@ -39,13 +38,12 @@ func (ScannerComputeInstances) Scan(s *session.Session, outCh chan<- []*model.Re
 						} else {
 							logger.Warn.Println(err)
 						}
-						resources = append(resources, &resource)
+						saveCh <- &resource
 					}
 				} else {
 					errCh <- err
 				}
 			}
-			outCh <- resources
 		} else {
 			errCh <- err
 		}
