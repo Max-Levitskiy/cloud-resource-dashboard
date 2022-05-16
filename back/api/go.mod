@@ -7,8 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.16.26
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20200901131320-e21ad8e37e8d
 	github.com/gin-contrib/cors v1.3.1
-	github.com/gin-gonic/gin v1.6.3
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
+	github.com/gin-gonic/gin v1.7.0
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/json-iterator/go v1.1.10 // indirect
